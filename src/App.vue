@@ -1,8 +1,8 @@
 <template>
 <img src="../public/images/icon-above-font.png" alt="">
   <nav>
-    <router-link to="/">Connexion</router-link>
-    <router-link to="/about">Inscription</router-link>
+    <router-link to="/login">Connexion</router-link>
+    <router-link to="/sign-up">Inscription</router-link>
   </nav>
   <router-view/>
 </template>
