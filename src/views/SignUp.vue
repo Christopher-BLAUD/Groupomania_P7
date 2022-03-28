@@ -2,20 +2,24 @@
   <div class="sign-up">
     <div class="sign-up_form">
     <form action="">
-      <p class="info">Créer un compte</p>
-      <input type="text" name="pseudo" placeholder="Pseudo">
+      <h2 class="info">Créer un compte</h2>
+      <BaseInput type="text" name="pseudo" placeholder="Pseudo" />
       <span class="pseudo-err-msg">Votre pseudo ne peut contenir que des caractères alphanumériques et les signes "., -, _"</span>
-      <input type="email" name="email" placeholder="Adresse email">
+      <BaseInput type="email" name="email" placeholder="Adresse email" />
       <span class="email-err-msg">Format d'adresse email incorrect (ex: jean.dupont@gmail.com)</span>
-      <input type="password" name="password" placeholder="Mot de passe">
+      <div id="pass-container">
+        <BaseInput type="password" name="password" placeholder="Mot de passe" id="form-password" />
+        <i class="fas fa-eye" @click="showPassword()" id="eye"></i>
+      </div>
       <span class="password-err-msg">Le mot de passe doit être composé de 8 caractères minimum, commencé par une majuscule et contenir des chiffres</span>
-      <input type="submit" value="S'incrire" class="submit-btn">      
+      <BaseButton value="S'inscrire" />      
     </form>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+@import "../sass/utils/mixins";
 .sign-up{
   display: flex;
   justify-content: center;
@@ -25,7 +29,11 @@
     justify-content: center;
     align-items: center;
     width: 400px;
-    background-color: #FFF1F1;
+    border: 1px solid #ffffff24;
+    border-radius: 15px;
+    @include mobile{
+      width: 300px;
+    }
     & form{
       display: flex;
       position: relative;
@@ -33,6 +41,15 @@
       justify-content: center;
       align-items: center;
       height: 400px;
+      & #pass-container{
+        position: relative;
+        & i{
+          position: absolute;
+          top: 25px;
+          right: 10px;
+          cursor: pointer;
+        }
+      }
       & span{
         display: inline-block;
         background-color: #FF0000;
@@ -90,31 +107,13 @@
         align-items: center;
         font-weight: bold;
         font-size: 20px;
+        color: #FDA054;
         &::after{
           content: "";
-          border: 1px solid #0000001f;
+          border: 1px solid #ffffff4f;
           width: 100px;
           margin: 10px 0;
         }
-      }
-      & input{
-        padding: 8px;
-        margin: 10px 0;
-        width: 250px;
-        border: 1px solid #0000003b;
-        border-radius: 3px;
-      }
-      & .submit-btn{
-        background-color: #42B72A;
-        color: #ffff;
-        font-weight: bold;
-        font-size: 16px;
-        border-radius: 10px;
-        width: 200px;
-        border: none;
-        padding: 10px;
-        cursor: pointer;
-        margin: 25px 0;
       }
     }
   }
@@ -125,3 +124,33 @@
   visibility: initial!important;
 }
 </style>
+
+<script>
+let e = true;
+export default {
+  name: 'SignUp',
+  components: {
+    BaseInput,
+    BaseButton
+    },
+    methods: {
+      showPassword() {
+        const eye = document.querySelector('#eye');
+        if(e){
+          document.querySelector('#form-password').setAttribute("type", "text");
+          eye.classList.replace("fa-eye", "fa-eye-slash");
+          e = false;
+        }
+        else{
+          document.querySelector('#form-password').setAttribute("type", "password");
+          eye.classList.replace("fa-eye-slash", "fa-eye");
+          e = true;
+        }
+      }
+    }
+}
+
+import BaseInput from "../components/BaseInput.vue"
+import BaseButton from "../components/BaseButton.vue"
+
+</script>

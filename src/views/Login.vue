@@ -1,14 +1,16 @@
 <template>
   <div class="login">
     <div class="login_form">
+      <h2 class="login_form_title">Connectez-vous</h2>
     <form action="">
-      <input type="email" name="email" placeholder="Adresse email">
+      <BaseInput type="email" name="email"  placeholder="Adresse email" id="form-email" @change="emailValidation()" />
       <span class="email-msg-err">Adresse email incorrect !</span>
       <div id="pass-container">
-        <input type="password" name="password" placeholder="Mot de passe" id="form-password">
-        <i class="fa-solid fa-eye"></i>
+        <BaseInput type="password" name="password" placeholder="Mot de passe" id="form-password" />
+        <i class="fas fa-eye" @click="showPassword()" id="eye"></i>
       </div>
-      <input type="submit" value="Se connecter" class="submit-btn">      
+      
+      <button type="submit" class="submit-btn"><router-link to="/home">Se connecter</router-link></button>     
       <span class="id-msg-err"><i class="fa-solid fa-circle-xmark"></i> Identifiants inconnus</span>
     </form>
     </div>
@@ -16,39 +18,70 @@
 </template>
 
 <script>
+import BaseInput from "../components/BaseInput.vue"
+
+
+
+let e = true;
+
 
 export default {
-  name: 'LoginPage'
+  name: 'LoginPage',
+  components: {
+    BaseInput
+    },
+    methods: {
+      showPassword() {
+        const eye = document.querySelector('#eye');
+        if(e){
+          document.querySelector('#form-password').setAttribute("type", "text");
+          eye.classList.replace("fa-eye", "fa-eye-slash");
+          e = false;
+        }
+        else{
+          document.querySelector('#form-password').setAttribute("type", "password");
+          eye.classList.replace("fa-eye-slash", "fa-eye");
+          e = true;
+        }
+      }
+      }
+    
 }
+
+
 
 </script>
 
 <style lang="scss" scoped>
+@import "../sass/utils/mixins";
 .login{
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-self: center;
   &_form{
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
     width: 400px;
-    background-color: #FFF1F1;
+    height: 400px;
+    border: 1px solid #ffffff24;
+    border-radius: 15px;
+    @include mobile{
+      width: 300px;
+    }
+    &_title{
+      color: #FDA054;
+      margin: 30px 0;
+      font-size: 20px;
+    }
     & form{
       display: flex;
       flex-direction: column;
       justify-content: center;
       position: relative;
       align-items: center;
-      height: 340px;
-      & input{
-        padding: 8px;
-        width: 250px;
-        margin: 15px 0;
-        border: 1px solid #0000003b;
-        border-radius: 3px;
-        padding-right: 40px;
-      }
+      margin-bottom: 20px;
       & span{
         display: inline-block;
         background-color: #FF0000;
@@ -82,18 +115,6 @@ export default {
           }
       }
       }
-      & .submit-btn{
-        background-color: #42B72A;
-        color: #ffff;
-        font-weight: bold;
-        font-size: 16px;
-        border-radius: 10px;
-        width: 200px;
-        border: none;
-        padding: 10px;
-        cursor: pointer;
-        margin: 25px 0;
-      }
       & #pass-container{
         position: relative;
         & i{
@@ -105,6 +126,21 @@ export default {
       }
     }
   }
+}
+.submit-btn {
+    background-color: #42B72A;        
+        border-radius: 10px;
+        width: 200px;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        margin: 25px 0;
+        & a{
+          text-decoration: none;
+          color: #ffff;
+          font-weight: bold;
+          font-size: 16px;
+        }
 }
  // Apparition des messages d'erreur
 .reveal{
