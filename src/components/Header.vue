@@ -14,10 +14,16 @@ export default {
 @import "../sass/utils/mixins";
 
 .header-logo{
-    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+    padding: 30px;
+    margin: 0 10px;
+    @include mobile{
+        justify-content: center;
+    }
     & img{
-        width: 334px;
-        height: 65px;
+        width: 252px;
+        height: 41px;
         @include mobile{
           width: 290px;
         }
