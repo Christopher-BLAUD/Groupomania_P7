@@ -213,7 +213,7 @@ main{
 }
 .user-banner{
     min-height: 125px;
-    width: 400px;
+    /* width: 400px; */
     padding: 15px;
     margin: 0 10px;
     display: flex;
@@ -233,8 +233,15 @@ main{
     &_body{
         display: flex;
         align-items: center;
+        align-self: flex-start;
+        margin-left: 20px;
         @include mobile{
             flex-direction: column;
+            align-self: initial;
+            margin-left: 0;
+        }
+        @include touch-pad{
+            margin-left: 0;
         }
         &_name{
             display: flex;
