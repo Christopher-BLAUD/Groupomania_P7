@@ -493,7 +493,6 @@ section{
             & span{
                 margin: 0 10px;
                 color: $primary-color;
-                font-weight: bold;
                 @include mobile{
                     text-align: start;
                 }
