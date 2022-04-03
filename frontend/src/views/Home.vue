@@ -4,10 +4,10 @@
             <div class="user-banner">
                 <div class="user-banner_body">
                     <div class="user-banner_body_img-profil">
-                        <img src="../assets/moi.png" alt="photo de profil utilisateur">
+                        <img src="" alt="photo de profil utilisateur">
                     </div>
                     <div class="user-banner_body_name">
-                        <span v-if="name">{{ prénom }} BLAUD </span>
+                        <span v-if="name">{{ userInfo.firstname }} {{ userInfo.lastname }} </span>
                         <span v-else>{{ pseudo }} BLAUD </span>
                     </div>
                     <div class="user-banner_body_action">
@@ -70,14 +70,14 @@
                     </div>
                 </aside>
 <!-- Post -->
-                <div class="user-post">
+                <div v-for="post in userPost" :key="post" class="user-post">
                     <div class="user-post_header">
                         <div class="user-post_header_pic">
-                            <img src="../assets/will_smith.jpg" alt="">
+                            <img :src="post.userProfilImg" alt="Photo de profil du créateur du post">
                         </div>
                         <div class="user-post_header_info">
                             <div class="user-post_header_info_name">
-                                <span>Will Smith</span>
+                                <span>{{ post.userFullname }}</span>
                             </div>
                             <div class="user-post_header_info_date">
                                 <span>28 mars 2022</span>
@@ -86,41 +86,31 @@
                     </div>
                     <div class="user-post_body">
                         <div class="user-post_body_pic">
-                            <img src="../assets/smith_gifle.jpg" alt="">
+                            <img :src="post.image" alt="Image du post">
                             <div class="user-post_body_pic_action">
                                 <div class="user-post_body_pic_action_like">
                                     <i class="far fa-heart" id="like-btn" @click="likeIt()"></i>
-                                    <span>{{ like }}</span>
+                                    <span>{{ post.like }}</span>
                                 </div>
                                 <div class="user-post_body_pic_action_comment">
                                 <i class="far fa-comment" id="new-comment" @click="showModal = !showModal"></i>
-                                <span id="comment" @click="show = !show">2 commentaires</span>
+                                <span id="comment" @click="show = !show">2</span>
                                 </div>
                             </div>
                         </div>
                         <div class="user-post_body_legend">
-                            <p>Tu aurais du y réfléchir à deux fois ...</p>
+                            <p>" {{ post.legend }} "</p>
                         </div>
                             <div class="user-post_body_comments" v-if="show">
-                                <div class="user-post_body_comment-container">
+                                <div v-for="comment in post.comments" :key="comment" class="user-post_body_comment-container">
                                     <div class="user-post_body_comment-container_user-pic">
-                                        <img src="../assets/moi.png" alt="">
+                                        <img :src="comment.userPicture" alt="Photo de profil du créateur du commentaire">
                                     </div>
                                     <div class="user-post_body_comment-container_username">
-                                        <span>Christopher BLAUD</span>
-                                        <p>Je lui en aurais mis une 2ème</p>
+                                        <span>{{ comment.userName }}</span>
+                                        <p>{{ comment.message }}</p>
                                     </div>
-                                </div>
-                                <div class="user-post_body_comment-container">
-                                    <div class="user-post_body_comment-container_user-pic">
-                                        <img src="../assets/will_smith.jpg" alt="">
-                                    </div>
-                                    <div class="user-post_body_comment-container_username">
-                                        <span>Will SMITH</span>
-                                        <p>Je tenais quand même à repartir avec mon oscar ...</p>
-                                    </div>
-                                </div>
-                               
+                                </div>                               
                             </div>
                     <aside v-if="showModal" id="comment-modal" class="modal">
                         <div class="write-comment">
@@ -144,7 +134,7 @@
 <script>
 import ModidyBtn from '../components/ModifyButton.vue';
 import BaseButton from '../components/BaseButton.vue';
-
+import axios from 'axios';
 let e = true;
 
 export default {
@@ -156,12 +146,29 @@ export default {
             showModal: false,
             showModalProfil: false,
             showModalPost: false,
-            prénom: 'Christopher',
+            userInfo: {},
+            userPost: {},
+            nom: '',
             pseudo: '',
-            like: 0,
             name: true,
             message: ""
         }
+    },
+    mounted() {
+        axios.get('http://localhost:3000/api/user')
+            .then(response => {
+                this.userInfo = response.data;
+                // Affiche la photo de profil de l'utilisateur connecté
+                const img = document.querySelector('.user-banner_body_img-profil img');
+                img.src = this.userInfo.imgProfil;
+            })
+            .catch(error => {
+                console.log(error)
+             });
+        axios.get('http://localhost:3000/api/post')
+            .then(res => {
+                this.userPost = res.data;
+            })
     },
     methods: {
         likeIt() {
@@ -226,6 +233,7 @@ main{
     border-radius: 15px;
     @include mobile{
         width: 330px;
+        padding: 15px 0;
     }
     @include touch-pad{
         width: 470px;
@@ -246,6 +254,7 @@ main{
         &_name{
             display: flex;
             text-align: start;
+            justify-content: center;
             min-width: 165px;
             max-width: 170px;
             word-break: break-all;
@@ -364,12 +373,12 @@ section{
     }
 
 .user-post{
-    width: 60%;
+    width: 80%;
     background-color: #202020;
     border-radius: 20px;
     margin: 30px 0;
     box-shadow: 11px 9px 21px #030202;
-    padding: 15px;
+    padding: 0 15px;
     @include mobile{
         width: calc(100% - 60px);
     }
@@ -402,6 +411,8 @@ section{
                 color: $primary-color;
             }
             &_date{
+                display: flex;
+                justify-content: flex-start;
                 font-size: 14px;
                 color: rgba(255, 255, 255, 0.514);
             }
@@ -426,7 +437,7 @@ section{
                 padding: 0 10px;
                 position: absolute;
                 bottom: 0;
-                background-color: #ffffff29;
+                background-color: #00000066;
                 backdrop-filter: blur(4px);
                 width: 100%;
                 height: 40px;
@@ -455,9 +466,9 @@ section{
                 margin: 20px 0;
             }
             &_user-pic{
-                width: 30px;
+                width: 60px;
                 min-width: 30px;
-                height: 30px;
+                height: 60px;
                 overflow: hidden;
                 border-radius: 50%;
                 margin: 15px;
@@ -465,6 +476,8 @@ section{
                     align-self: center;
                     margin: 0;
                     margin-bottom: 0;
+                    width: 30px;
+                    height: 30px
                 }
                 & img{
                     @include img-size;
