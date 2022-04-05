@@ -8,7 +8,7 @@
       <input v-model="email" type="email" name="email"  placeholder="Adresse email" id="form-email" />
       <span class="email-msg-err">Adresse email incorrect !</span>
       <div id="pass-container">
-        <input v-model="password" type="password" name="password" placeholder="Mot de passe" id="form-password" @change="passwordValidation()" />
+        <input v-model="password" type="password" name="password" placeholder="Mot de passe" id="form-password" @input="passwordValidation()" />
         <i class="fas fa-eye" @click="showPassword()" id="eye"></i>
         <span class="pass-msg-err">Votre mot de passe doit commencer par une majuscule et contenir <strong>au moins 8 caractères</strong> <br> ( dont au moins <strong>2 chiffres</strong> )</span>
       </div>
@@ -21,6 +21,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import BaseButton from "../components/BaseButton.vue"
 import Navi from '../components/Navi.vue'
 const passwordRegex = /^[A-Z][a-z]{5,}[0-9]{2,}/;
@@ -54,8 +55,20 @@ export default {
       },
       // Connexion à l'application
       login(){
+        const unknowId = document.querySelector('.id-msg-err');
         if(passwordRegex.test(this.password) && this.email !== "" && this.password !== "") {
-          this.$router.push({name: 'home'})
+          axios.post('http://localhost:3000/api/auth/login', {
+            email: this.email,
+            password: this.password
+          })
+          .then((response) => {
+            console.log(response)
+            this.$router.push({name: 'home'})
+          })
+          .catch(error => console.log(error));
+        }
+        else{
+          unknowId.classList.add('reveal');
         }
       },
       // Contrôle du mot de passe
@@ -151,7 +164,7 @@ export default {
         &.id-msg-err{
           visibility: hidden;
           position: absolute;
-          bottom: 25px;
+          bottom: -17px;
           background: none;
           color: #FF0000;
           font-weight: bold;

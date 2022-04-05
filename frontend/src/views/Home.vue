@@ -155,7 +155,7 @@ export default {
         }
     },
     mounted() {
-        axios.get('http://localhost:3000/api/user')
+        axios.get('http://localhost:3000/api/auth')
             .then(response => {
                 this.userInfo = response.data;
                 // Affiche la photo de profil de l'utilisateur connecté
@@ -168,7 +168,7 @@ export default {
         axios.get('http://localhost:3000/api/post')
             .then(res => {
                 this.userPost = res.data;
-            })
+            });
     },
     methods: {
         likeIt() {
@@ -216,6 +216,8 @@ main{
     @include mobile{
         width: 100%;
         align-items: center;
+    }
+    @include touch-pad{
     }
 }
 .user-banner{
@@ -373,7 +375,7 @@ section{
     }
 
 .user-post{
-    width: 80%;
+    width: 900px;
     background-color: #202020;
     border-radius: 20px;
     margin: 30px 0;

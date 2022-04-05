@@ -5,18 +5,18 @@
     <div class="sign-up_form">
     <form action="">
       <h2 class="info">Créer un compte</h2>
-      <input v-model="lastName" type="text" name="last-name" placeholder="Nom" id="lastName" @change="lastNameValidation()"/>
+      <input v-model="lastName" type="text" name="last-name" placeholder="Nom" id="lastName" @input="lastNameValidation()"/>
       <span class="lastname-err-msg">Nom incorrect</span>
-      <input v-model="firstName" type="text" name="first-name" placeholder="Prénom" id="firstName" @change="firstNameValidation()" />
+      <input v-model="firstName" type="text" name="first-name" placeholder="Prénom" id="firstName" @input="firstNameValidation()" />
       <span class="firstname-err-msg">Prénom incorrect</span>
       <input v-model="email" type="email" name="email" placeholder="Adresse email" id="email" />
       <!-- <span class="email-err-msg">Format d'adresse email incorrect (ex: jean.dupont@gmail.com)</span> -->
       <div id="pass-container">
-        <input v-model="password" type="password" name="password" placeholder="Mot de passe" id="form-password" @change="passwordValidation()"/>
+        <input v-model="password" type="password" name="password" placeholder="Mot de passe" id="form-password" @input="passwordValidation()"/>
         <i class="fas fa-eye" @click="showPassword()" id="eye"></i>
         <span class="pass-msg-err">Votre mot de passe doit commencer par une majuscule et contenir <strong>au moins 8 caractères</strong> <br> ( dont au moins <strong>2 chiffres</strong> )</span>
       </div>
-      <BaseButton value="S'inscrire" @click.prevent="loginRedirection()"/>      
+      <BaseButton value="S'inscrire" @click.prevent="createUser()"/>      
     </form>
     </div>
   </div>
@@ -26,10 +26,12 @@
 <script>
 import BaseButton from "../components/BaseButton.vue"
 import Navi from '../components/Navi.vue'
+import axios from 'axios'
 
 // Définition des Regex
 const passwordRegex = /^[A-Z][a-z]{5,}[0-9]{2,}/;
 const nameRegex = /[a-zA-Z\- éèàëïäüêâê']{2,}/;
+
 
 let e = true;
 export default {
@@ -93,9 +95,26 @@ export default {
           alert('Votre compte a été créé avec succès !')
           this.$router.push({path: '/login'})
         } 
+      },
+      createUser() {
+        if(nameRegex.test(this.lastName) && nameRegex.test(this.firstName) && passwordRegex.test(this.password) && this.lastName !== '' && this.firstName !== '' && this.email !== '' && this.password !== ''){
+        axios.post('http://localhost:3000/api/auth/signup', {
+          lastname: this.lastName,
+          firstname: this.firstName,
+          email: this.email,
+          password: this.password
+      })
+      .then((response) => {
+        console.log(response)
+        this.$router.push({path: '/login'});
+        })
+      .catch(err => console.log(err));
+      }
+      else{
+        alert('Merci de compléter tous les champs du formulaire')
+      }
       }
     }}
-
 
 </script>
 

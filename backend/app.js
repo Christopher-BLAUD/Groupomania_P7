@@ -2,6 +2,12 @@ const express = require('express');
 const app = express();
 const userRoutes = require('./routes/user');
 const postRoutes = require('./routes/post');
+const sequelize = require('./utils/database');
+const User = require('./models/user');
+const Post = require('./models/post');
+const bodyParser = require('body-parser');
+
+
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -11,9 +17,23 @@ app.use((req, res, next) => {
   });
 
 
-app.use('/api/user', userRoutes);
-app.use('/api/post', postRoutes);
+  app.use(bodyParser.json());
+/*   app.use(bodyParser.urlencoded({ extended: true})); */
 
+User.belongsToMany(Post, { through: 'users_posts'});
+Post.belongsToMany(User, { through: 'users_posts'});
+
+sequelize
+  .sync()
+  .then((result) => {
+    console.log(result);
+  })
+  .catch((error) => {
+    console.log(error);
+  })
+
+app.use('/api/auth', userRoutes);
+app.use('/api/post', postRoutes);
 
 
 module.exports = app;
