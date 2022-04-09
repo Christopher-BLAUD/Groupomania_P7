@@ -57,12 +57,13 @@ export default {
       login(){
         const unknowId = document.querySelector('.id-msg-err');
         if(passwordRegex.test(this.password) && this.email !== "" && this.password !== "") {
-          axios.post('http://localhost:3000/api/auth/login', {
+          axios.post('http://localhost:3000/api/user/login', {
             email: this.email,
             password: this.password
           })
           .then((response) => {
             console.log(response)
+            localStorage.setItem('id', response.data.userId)
             this.$router.push({name: 'home'})
           })
           .catch(error => console.log(error));

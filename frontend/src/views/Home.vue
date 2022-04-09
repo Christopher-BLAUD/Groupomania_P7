@@ -27,7 +27,8 @@
                     <div class="profil-modal_edit_pic">
                         <div class="profil-modal_edit_pic_info">
                             <h3>Photo de profil</h3>
-                            <ModidyBtn @click="showModalProfil = !showModalProfil"/>
+                            <ModidyBtn @click.prevent="getFile()"/>
+                            <input type="file" name="avatar" id="user-avatar" style="display:none">
                         </div>
                         <div class="profil-modal_edit_pic_container">
                             <img src="../assets/moi.png" alt="">
@@ -43,6 +44,7 @@
                             <input v-model="pseudo" type="text" name="name" placeholder="Nouveau pseudo" id="new-pseudo">
                         </div>
                     </div>
+                    <BaseButton value="Envoyer" @click="getUserAvatar()"/>
                 </div>
             </aside>
 <!-- Main Page -->
@@ -155,12 +157,10 @@ export default {
         }
     },
     mounted() {
-        axios.get('http://localhost:3000/api/auth')
+        let id = localStorage.getItem('id')
+        axios.get('http://localhost:3000/api/user/' + id)
             .then(response => {
                 this.userInfo = response.data;
-                // Affiche la photo de profil de l'utilisateur connecté
-                const img = document.querySelector('.user-banner_body_img-profil img');
-                img.src = this.userInfo.imgProfil;
             })
             .catch(error => {
                 console.log(error)
@@ -188,7 +188,25 @@ export default {
             this.name = false;
         },
         getFile() {
-            document.querySelector('#join-img').click();
+            document.querySelector('#user-avatar').click();
+        },
+        getUserAvatar() {
+            const file = document.querySelector('#user-avatar');
+            const id = localStorage.getItem('id');
+            const formData = new FormData();
+            formData.append('file', file.file);
+            formData.append('name', 'image');
+            axios.post('http://localhost:3000/api/user/images/:id', {
+                body: formData,
+                params: {
+                    id: id
+                },
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            })
+            .then((res) => console.log(res))
+            .catch((error) => ('Error occured', error))
         }
     }
 }

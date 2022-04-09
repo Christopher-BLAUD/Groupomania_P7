@@ -16,7 +16,7 @@
         <i class="fas fa-eye" @click="showPassword()" id="eye"></i>
         <span class="pass-msg-err">Votre mot de passe doit commencer par une majuscule et contenir <strong>au moins 8 caractères</strong> <br> ( dont au moins <strong>2 chiffres</strong> )</span>
       </div>
-      <BaseButton value="S'inscrire" @click.prevent="createUser()"/>      
+        <BaseButton value="S'inscrire" @click.prevent="createUser()"/>      
     </form>
     </div>
   </div>

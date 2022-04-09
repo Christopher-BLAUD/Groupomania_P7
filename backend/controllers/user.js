@@ -4,17 +4,19 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-exports.getUser = (req, res, next) => {
-    const user = {
-        id: 1,
-        firstname: 'Christopher',
-        lastname: 'BLAUD',
-        imgProfil: 'https://media-exp1.licdn.com/dms/image/C5603AQHV-muhE2ajfQ/profile-displayphoto-shrink_200_200/0/1607179792889?e=1654732800&v=beta&t=dRM6yJxORZnXwftIec3jhkpMpjcFI3RUW5lmCKO26uU'
 
-    };
-    res.status(200).json(user);
+
+// Affiche la mur de publication avec les informations utilisateurs
+
+exports.getUser = (req, res, next) => {
+    const userData = {}
+    User.findOne({where: {id: req.params.id}})
+    .then(user => res.status(200).json(user))
+    .catch((error) => res.status(500).json(error))
 }
 
+
+// Inscrisption de l'utilisateur 
 
 exports.signUp = (req, res, next) => {
 sequelize.sync()
@@ -35,6 +37,10 @@ sequelize.sync()
         console.log(err);
     });
 }
+
+
+
+// Connexion de l'utilisateur et redirection vers le mur de publication
 
 exports.login = (req, res, next) => {
     User.findOne({ where: {email: req.body.email}})
@@ -62,3 +68,24 @@ exports.login = (req, res, next) => {
     })
     .catch(error => res.status(500).json({error}))
 };
+
+// Ajout d'une image de profil
+
+/* exports.addUserAvatar = (req, res, next) => {
+    User.update({imageUrl:`${req.protocol}://${req.get('host')}/images/${req.file.filename}`}, {where: {id: req.params.id}})
+        .then(user => res.status(200).json({message: 'Image uploadée avec succès !'}))
+        .catch((error) => {res.status(500).json(error)})
+} */
+
+exports.addUserAvatar =  (req, res, next) => {
+    console.log(req.body);
+    console.log(req.file);
+    res.status(200);
+    User.update({
+        imageUrl:`${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    }, {
+        where: {id: req.params.id}
+    })
+        .then(user => res.status(200).json({message: 'Image uploadée avec succès !'}))
+        .catch((error) => {res.status(500).json(error)})
+}

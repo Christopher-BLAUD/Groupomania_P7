@@ -6,6 +6,8 @@ const sequelize = require('./utils/database');
 const User = require('./models/user');
 const Post = require('./models/post');
 const bodyParser = require('body-parser');
+const path = require('path');
+
 
 
 
@@ -18,7 +20,7 @@ app.use((req, res, next) => {
 
 
   app.use(bodyParser.json());
-/*   app.use(bodyParser.urlencoded({ extended: true})); */
+  app.use(bodyParser.urlencoded({ extended: true}));
 
 User.belongsToMany(Post, { through: 'users_posts'});
 Post.belongsToMany(User, { through: 'users_posts'});
@@ -32,8 +34,11 @@ sequelize
     console.log(error);
   })
 
-app.use('/api/auth', userRoutes);
+app.use('/api/user/images', express.static(path.join(__dirname, 'images')));
+
+app.use('/api/user', userRoutes);
 app.use('/api/post', postRoutes);
+
 
 
 module.exports = app;
