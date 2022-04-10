@@ -98,7 +98,7 @@ export default {
       },
       createUser() {
         if(nameRegex.test(this.lastName) && nameRegex.test(this.firstName) && passwordRegex.test(this.password) && this.lastName !== '' && this.firstName !== '' && this.email !== '' && this.password !== ''){
-        axios.post('http://localhost:3000/api/auth/signup', {
+        axios.post('http://localhost:3000/api/user/signup', {
           lastname: this.lastName,
           firstname: this.firstName,
           email: this.email,

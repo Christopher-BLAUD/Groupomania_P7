@@ -10,6 +10,12 @@
     }    
 }
 
+@mixin large-screen {
+    @media screen and (min-width: 1300px) {
+        @content;
+    }  
+}
+
 @mixin img-size {
     width: 100%;
     height: 100%;

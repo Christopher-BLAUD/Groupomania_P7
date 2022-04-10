@@ -1,4 +1,9 @@
-exports.getPost = (req, res, next) => {
+const sequelize = require('../utils/database');
+const Post = require('../models/post');
+const User = require('../models/user');
+
+
+/* exports.getPost = (req, res, next) => {
     const post = [
         {
             id: 1,
@@ -62,4 +67,34 @@ exports.getPost = (req, res, next) => {
         }
     ];
     res.status(200).json(post);
-};
+}; */
+
+exports.getPost = (req, res, next) => {
+    Post.findAll()
+    .then(post => res.status(200).json(post))
+    .catch((error) => res.status(500).json(error))
+}
+
+exports.createPost = (req, res, next) => {
+sequelize.sync()
+    .then(newPost => {
+        return Post.create({
+            content: req.body.content,
+            image: `${req.protocol}://${req.get('host')}/api/post/images/${req.file.filename}`,
+            userId: req.params.id    
+        })
+    })
+    .then(post => res.status(201).json({message: 'Publication avec photo envoyée avec succés', post}))
+    .catch(error => {res.status(500).json(error)})
+}
+
+/* exports.createMessage = (req, res, next) => {
+    sequelize.sync()
+    .then(newMessage => {
+        return Post.create({
+            content: req.body.content
+        })
+    })
+    .then(message => res.status(201).json({message: 'Publication envoyée avec succés', post}))
+    .catch(error => {res.status(500).json(error)})
+} */

@@ -47,21 +47,23 @@
                 </div>
 <!-- Edit Post Modal -->
                 <aside v-if="showModalPost" class="post-modal">
-                    <div class="post-modal_edit">
-                        <i class="fas fa-times" @click="showModalPost = !showModalPost"></i>
-                        <h2>Créer une publication</h2>
-                        <span>Votre message</span>
-                        <textarea v-model="message" name="" id="" cols="60" rows="10"></textarea>
-                        <span>Joindre une image</span>
-                        <div class="post-modal_edit_join">
-                            <button class="post-modal_edit_join_btn" @click="getFile()">Parcourir</button>
-                            <input type="file" name="image" id="join-img" style="display:none">
-                            <div class="post-modal_edit_join_img-preview">
-                                <img src="../assets/smith_gifle.jpg" alt="">
-                            </div>
+                    <form id="post-form" enctype="multipart/form-data">
+                        <div class="post-modal_edit">
+                            <i class="fas fa-times" @click="showModalPost = !showModalPost"></i>
+                            <h2>Créer une publication</h2>
+                            <span>Votre message</span>
+                                <textarea @change="showMessage()" v-model="message" name="" id="" cols="60" rows="10"></textarea>
+                                <span>Joindre une image</span>
+                                <div class="post-modal_edit_join">
+                                    <button class="post-modal_edit_join_btn" @click="getPostFile()">Parcourir</button>
+                                    <input @change="postAttachmentUploaded()" type="file" name="image" id="join-img" style="display:none">
+                                    <div class="post-modal_edit_join_img-preview">
+                                        <img src="../assets/smith_gifle.jpg" alt="">
+                                    </div>
+                                </div>
+                                <BaseButton @click.prevent="sendPost()" value="Poster !" />
                         </div>
-                        <BaseButton value="Poster !" />
-                    </div>
+                    </form>
                 </aside>
 <!-- Post -->
                 <div v-for="post in userPost" :key="post" class="user-post">
@@ -93,7 +95,7 @@
                             </div>
                         </div>
                         <div class="user-post_body_legend">
-                            <p>" {{ post.legend }} "</p>
+                            <p>{{ post.content }}</p>
                         </div>
                             <div class="user-post_body_comments" v-if="show">
                                 <div v-for="comment in post.comments" :key="comment" class="user-post_body_comment-container">
@@ -140,12 +142,13 @@ export default {
             showModal: false,
             showModalProfil: false,
             showModalPost: false,
+            name: true,
             userInfo: {},
             userPost: {},
             avatar: null,
+            postAttachment: null,
             nom: '',
-            pseudo: '',
-            name: true,
+            pseudo: '',            
             message: ""
         }
     },
@@ -153,8 +156,7 @@ export default {
         let id = localStorage.getItem('id')
         axios.get('http://localhost:3000/api/user/' + id)
             .then(response => {
-                this.userInfo = response.data;
-                
+                this.userInfo = response.data;                
             })
             .catch(error => {
                 console.log(error)
@@ -162,8 +164,11 @@ export default {
         axios.get('http://localhost:3000/api/post')
             .then(res => {
                 this.userPost = res.data;
-            });
-            
+                console.log(this.userPost)
+            })
+            .catch(error => {
+                console.log(error)
+             });            
     },
     methods: {
         likeIt() {
@@ -179,24 +184,63 @@ export default {
                 this.like--
             }
         },
+        showMessage(){
+            console.log(this.message);
+        },
         changeName() {
             this.name = false;
         },
         getFile() {
             document.querySelector('#user-avatar').click();
         },
+        getPostFile() {
+            document.querySelector('#join-img').click();
+        },
         imgUploaded(){
             const inputFile = document.querySelector('#user-avatar')
             this.avatar = inputFile.files[0];
             console.log(this.avatar);
         },
+        postAttachmentUploaded() {
+            const inputFilePost = document.querySelector('#join-img');
+            this.postAttachment = inputFilePost.files[0];
+            console.log(this.postAttachment)
+        },
         getUserAvatar() {
             const id = localStorage.getItem('id');
-            const formData = new FormData();
-            formData.append('image', this.avatar, this.avatar.name)
-            axios.post('http://localhost:3000/api/user/images/' + id, formData)
-            .then((res) => console.log(res))
+            const formDataUser = new FormData();
+            formDataUser.append('image', this.avatar, this.avatar.name)
+            axios.post('http://localhost:3000/api/user/images/' + id, formDataUser)
+            .then((res) => {
+                console.log(res)
+                location.reload();
+            })
             .catch((error) => console.log(error))
+        },
+        sendPost() {
+            const id = localStorage.getItem('id');
+            const formDataPost = new FormData();
+            formDataPost.append('image', this.postAttachment);
+            formDataPost.append('content', this.message);
+            if(this.postAttachment !== null){
+                axios.post('http://localhost:3000/api/post/create/' + id, formDataPost)
+                    .then((res) => {
+                        console.log(res);
+                        location.reload();
+                    })
+                    .catch((error) => console.log(error))
+            }
+            else {
+                /* const fdMessage = new FormData();
+                fdMessage.append('content', this.message)
+                axios.post('http://localhost:3000/api/post/message', fdMessage)
+                    .then((res) => {
+                        console.log(res);
+                        location.reload();
+                    })
+                    .catch((error) => console.log(error)) */
+                    alert(`Votre post nécessite d'y ajouter une image`)
+            }
         }
     }
 }
@@ -225,7 +269,10 @@ main{
         width: 100%;
         align-items: center;
     }
-    @include touch-pad{
+    @include large-screen{
+        flex-direction: row;
+        justify-content: space-between;
+        padding-right: 100px;
     }
 }
 .user-banner{
@@ -248,6 +295,9 @@ main{
     @include touch-pad{
         width: 470px;
     }
+    @include large-screen{
+        justify-content: flex-start;
+    }
     &_body{
         display: flex;
         align-items: center;
@@ -260,6 +310,9 @@ main{
         }
         @include touch-pad{
             margin-left: 0;
+        }
+        @include large-screen{
+            margin-top: 20px;
         }
         &_name{
             display: flex;

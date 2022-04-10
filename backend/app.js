@@ -23,8 +23,9 @@ app.use((req, res, next) => {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true}));
 
-User.belongsToMany(Post, { through: 'users_posts'});
-Post.belongsToMany(User, { through: 'users_posts'});
+/* User.belongsToMany(Post, { through: 'users_posts'});
+Post.belongsToMany(User, { through: 'users_posts'}); */
+User.hasMany(Post);
 
 sequelize
   .sync()
@@ -36,6 +37,7 @@ sequelize
   })
 
 app.use('/api/user/images', express.static(path.join(__dirname, 'images')));
+app.use('/api/post/images', express.static(path.join(__dirname, 'images')));
 app.use(express.static('images'));
 
 app.use('/api/user', userRoutes);
