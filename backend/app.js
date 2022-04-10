@@ -7,6 +7,7 @@ const User = require('./models/user');
 const Post = require('./models/post');
 const bodyParser = require('body-parser');
 const path = require('path');
+const { hasUncaughtExceptionCaptureCallback } = require('process');
 
 
 
@@ -35,6 +36,7 @@ sequelize
   })
 
 app.use('/api/user/images', express.static(path.join(__dirname, 'images')));
+app.use(express.static('images'));
 
 app.use('/api/user', userRoutes);
 app.use('/api/post', postRoutes);

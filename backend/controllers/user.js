@@ -75,7 +75,7 @@ exports.addUserAvatar =  (req, res, next) => {
     console.log(req.body);
     console.log(req.file);
     User.update({
-        imageUrl:`${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        imageUrl:`${req.protocol}://${req.get('host')}/api/user/images/${req.file.filename}`
     }, {
         where: {id: req.params.id}
     })

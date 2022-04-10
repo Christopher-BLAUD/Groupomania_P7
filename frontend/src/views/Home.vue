@@ -32,7 +32,7 @@
                                 <input @change="imgUploaded()" type="file" name="avatar" id="user-avatar" style="display:none">
                             </div>
                             <div class="profil-modal_edit_pic_container">
-                                <img src="../assets/moi.png" id="user-img">
+                                <img :src="userInfo.imageUrl" id="user-img">
                             </div>    
                         </div>
                         <BaseButton value="Envoyer" @click.prevent="getUserAvatar()"/>
@@ -151,8 +151,6 @@ export default {
     },
     mounted() {
         let id = localStorage.getItem('id')
-        /* const userAvatar = document.querySelector('#user-img');
-        userAvatar.setAttribute('src', this.userInfo.imageUrl ); */
         axios.get('http://localhost:3000/api/user/' + id)
             .then(response => {
                 this.userInfo = response.data;
