@@ -4,7 +4,7 @@
             <div class="user-banner">
                 <div class="user-banner_body">
                     <div class="user-banner_body_img-profil">
-                        <img src="" alt="photo de profil utilisateur">
+                        <img :src="userInfo.imageUrl" alt="photo de profil utilisateur">
                     </div>
                     <div class="user-banner_body_name">
                         <span v-if="name">{{ userInfo.firstname }} {{ userInfo.lastname }} </span>
@@ -24,27 +24,19 @@
                         <h2>Modifier le profil</h2>
                         <i class="fas fa-times" @click="showModalProfil = !showModalProfil"></i>
                     </div>
-                    <div class="profil-modal_edit_pic">
-                        <div class="profil-modal_edit_pic_info">
-                            <h3>Photo de profil</h3>
-                            <ModidyBtn @click.prevent="getFile()"/>
-                            <input type="file" name="avatar" id="user-avatar" style="display:none">
+                    <form id="form" enctype="multipart/form-data">
+                        <div class="profil-modal_edit_pic">
+                            <div class="profil-modal_edit_pic_info">
+                                <h3>Photo de profil</h3>
+                                <ModidyBtn @click.prevent="getFile()"/>
+                                <input @change="imgUploaded()" type="file" name="avatar" id="user-avatar" style="display:none">
+                            </div>
+                            <div class="profil-modal_edit_pic_container">
+                                <img src="../assets/moi.png" id="user-img">
+                            </div>    
                         </div>
-                        <div class="profil-modal_edit_pic_container">
-                            <img src="../assets/moi.png" alt="">
-                        </div>    
-                    </div>
-                    <div class="profil-modal_edit_name">
-                        <div class="profil-modal_edit_name_info">
-                            <h3>Pseudo</h3>
-                            <ModidyBtn @click="changeName()"/>
-                        </div>
-                        <div class="profil-modal_edit_name_input">
-                            <label for="name">{{ prénom }}</label>
-                            <input v-model="pseudo" type="text" name="name" placeholder="Nouveau pseudo" id="new-pseudo">
-                        </div>
-                    </div>
-                    <BaseButton value="Envoyer" @click="getUserAvatar()"/>
+                        <BaseButton value="Envoyer" @click.prevent="getUserAvatar()"/>
+                    </form>
                 </div>
             </aside>
 <!-- Main Page -->
@@ -150,6 +142,7 @@ export default {
             showModalPost: false,
             userInfo: {},
             userPost: {},
+            avatar: null,
             nom: '',
             pseudo: '',
             name: true,
@@ -158,9 +151,12 @@ export default {
     },
     mounted() {
         let id = localStorage.getItem('id')
+        /* const userAvatar = document.querySelector('#user-img');
+        userAvatar.setAttribute('src', this.userInfo.imageUrl ); */
         axios.get('http://localhost:3000/api/user/' + id)
             .then(response => {
                 this.userInfo = response.data;
+                
             })
             .catch(error => {
                 console.log(error)
@@ -169,6 +165,7 @@ export default {
             .then(res => {
                 this.userPost = res.data;
             });
+            
     },
     methods: {
         likeIt() {
@@ -190,23 +187,18 @@ export default {
         getFile() {
             document.querySelector('#user-avatar').click();
         },
+        imgUploaded(){
+            const inputFile = document.querySelector('#user-avatar')
+            this.avatar = inputFile.files[0];
+            console.log(this.avatar);
+        },
         getUserAvatar() {
-            const file = document.querySelector('#user-avatar');
             const id = localStorage.getItem('id');
             const formData = new FormData();
-            formData.append('file', file.file);
-            formData.append('name', 'image');
-            axios.post('http://localhost:3000/api/user/images/:id', {
-                body: formData,
-                params: {
-                    id: id
-                },
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                }
-            })
+            formData.append('image', this.avatar, this.avatar.name)
+            axios.post('http://localhost:3000/api/user/images/' + id, formData)
             .then((res) => console.log(res))
-            .catch((error) => ('Error occured', error))
+            .catch((error) => console.log(error))
         }
     }
 }

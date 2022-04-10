@@ -71,16 +71,9 @@ exports.login = (req, res, next) => {
 
 // Ajout d'une image de profil
 
-/* exports.addUserAvatar = (req, res, next) => {
-    User.update({imageUrl:`${req.protocol}://${req.get('host')}/images/${req.file.filename}`}, {where: {id: req.params.id}})
-        .then(user => res.status(200).json({message: 'Image uploadée avec succès !'}))
-        .catch((error) => {res.status(500).json(error)})
-} */
-
 exports.addUserAvatar =  (req, res, next) => {
     console.log(req.body);
     console.log(req.file);
-    res.status(200);
     User.update({
         imageUrl:`${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     }, {
