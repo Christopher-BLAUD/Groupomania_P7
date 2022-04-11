@@ -218,15 +218,22 @@ export default {
             .catch((error) => console.log(error))
         },
         sendPost() {
-            const id = localStorage.getItem('id');
+            const userId = localStorage.getItem('id');
+            const token = localStorage.getItem('token');
+            const config = {
+                headers: {
+                    "Authorization": "Bearer " + token 
+                }
+            }
+
             const formDataPost = new FormData();
             formDataPost.append('image', this.postAttachment);
             formDataPost.append('content', this.message);
             if(this.postAttachment !== null){
-                axios.post('http://localhost:3000/api/post/create/' + id, formDataPost)
+                axios.post('http://localhost:3000/api/post/create/' + userId, formDataPost, config)
                     .then((res) => {
                         console.log(res);
-                        location.reload();
+                        /* location.reload(); */
                     })
                     .catch((error) => console.log(error))
             }
