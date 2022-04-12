@@ -18,27 +18,7 @@
                 </div>                
             </div>
 <!-- Edit Profil Modal -->
-            <aside v-if="showModalProfil" class="profil-modal">
-                <div class="profil-modal_edit">
-                    <div class="profil-modal_edit_title">
-                        <h2>Modifier le profil</h2>
-                        <i class="fas fa-times" @click="showModalProfil = !showModalProfil"></i>
-                    </div>
-                    <form id="form" enctype="multipart/form-data">
-                        <div class="profil-modal_edit_pic">
-                            <div class="profil-modal_edit_pic_info">
-                                <h3>Photo de profil</h3>
-                                <ModidyBtn @click.prevent="getFile()"/>
-                                <input @change="imgUploaded()" type="file" name="avatar" id="user-avatar" style="display:none">
-                            </div>
-                            <div class="profil-modal_edit_pic_container">
-                                <img :src="userInfo.imageUrl" id="user-img">
-                            </div>    
-                        </div>
-                        <BaseButton value="Envoyer" @click.prevent="getUserAvatar()"/>
-                    </form>
-                </div>
-            </aside>
+            <ProfilModal v-if="showModalProfil"/>
 <!-- Main Page -->
             <section>
                 <div class="user-msg">
@@ -128,14 +108,15 @@
 </template>
 
 <script>
-import ModidyBtn from '../components/ModifyButton.vue';
+/* import ModidyBtn from '../components/ModifyButton.vue'; */
 import BaseButton from '../components/BaseButton.vue';
+import ProfilModal from '../components/ProfilModal.vue'
 import axios from 'axios';
 let e = true;
 
 export default {
     name: 'HomePage',
-    components: {ModidyBtn, BaseButton},
+    components: {/* ModidyBtn,  */BaseButton, ProfilModal},
     data() {
         return {
             show: false,
