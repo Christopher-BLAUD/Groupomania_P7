@@ -25,7 +25,10 @@ app.use((req, res, next) => {
 
 /* User.belongsToMany(Post, { through: 'users_posts'});
 Post.belongsToMany(User, { through: 'users_posts'}); */
+/* User.hasMany(Post); */
+
 User.hasMany(Post);
+Post.belongsTo(User);
 
 sequelize
   .sync()

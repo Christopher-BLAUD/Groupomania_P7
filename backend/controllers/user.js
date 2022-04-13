@@ -2,6 +2,7 @@ const sequelize = require('../utils/database');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const Post = require('../models/post');
 require('dotenv').config();
 
 
@@ -79,5 +80,20 @@ exports.addUserAvatar =  (req, res, next) => {
         where: {id: req.params.id}
     })
         .then(user => res.status(200).json({message: 'Image uploadée avec succès !'}))
+        .catch((error) => {res.status(500).json(error)})
+}
+
+
+// Suppression du compte utilisateur 
+exports.deleteUserAccount = (req, res, next) => {
+    User.destroy({
+        where: {
+            id: req.params.id
+        },
+        includes: {
+            model: Post
+        }
+    })
+        .then(user => res.status(200).json({message: 'Le compte a bien été supprimé', user}))
         .catch((error) => {res.status(500).json(error)})
 }

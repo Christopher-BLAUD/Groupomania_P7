@@ -12,6 +12,7 @@ export default {
 <style lang="scss">
 @import "../sass/utils/variables";
 .submit-btn {
+  align-self: center;
     background-color: #42B72A;
         color: #000;
         font-weight: bold;

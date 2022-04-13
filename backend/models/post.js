@@ -19,6 +19,10 @@ const Post = sequelize.define('post', {
     like: {
         type: Sequelize.INTEGER,
         allowNull: true
+    },
+    userId: {
+        type: Sequelize.INTEGER,
+        allowNull: false
     }
 });
 

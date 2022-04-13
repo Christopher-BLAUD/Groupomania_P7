@@ -3,7 +3,7 @@
                 <div class="profil-modal_edit">
                     <div class="profil-modal_edit_title">
                         <h2>Modifier le profil</h2>
-                        <i class="fas fa-times" @click="showModalProfil = !showModalProfil"></i>
+                        <i class="fas fa-times" @click="showModalProfil"></i>
                     </div>
                     <form id="form" enctype="multipart/form-data">
                         <div class="profil-modal_edit_pic">
@@ -14,6 +14,7 @@
                             </div>
                         </div>
                         <BaseButton value="Envoyer" @click.prevent="getUserAvatar()"/>
+                        <button class="delete-account" type="submit" @click.prevent="deleteAccount">Supprimer votre compte</button>
                     </form>
                 </div>
             </aside>
@@ -32,8 +33,7 @@ export default {
     },
     datat() {
         return {
-            avatar: null,
-            showModalProfil: false
+            avatar: null
         }
     },
     methods: {
@@ -55,6 +55,20 @@ export default {
                 location.reload();
             })
             .catch((error) => console.log(error))
+        },
+        showModalProfil() {
+            this.$store.commit('SHOW_MODAL_PROFIL');
+        },
+        deleteAccount() {
+            const id = localStorage.getItem('id');
+            axios.delete('http://localhost:3000/api/user/delete-account/' + id)
+            .then(() => {
+                if(confirm('Cette action est irréversible. Êtes-vous sûr ?')){
+                    localStorage.clear();
+                    this.$router.push({path: 'login'});
+                }
+            })
+            .catch(error => console.log(error))
         }
     }
 }
@@ -146,6 +160,29 @@ export default {
     }
     to{
         transform: scale(1);
+    }
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    & .delete-account{
+        background-color: #f61100;
+        align-self: center;
+        color: #000;
+        font-weight: bold;
+        font-size: 16px;
+        font-family: $font;
+        border-radius: 10px;
+        width: 200px;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        margin: 25px 0;
+        transition: all .2s ease-in-out;
+            &:hover{
+              transform: scale(1.1);
+            }
     }
 }
 </style>

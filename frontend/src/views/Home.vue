@@ -7,56 +7,38 @@
                         <img :src="userInfo.imageUrl" alt="photo de profil utilisateur">
                     </div>
                     <div class="user-banner_body_name">
-                        <span v-if="name">{{ userInfo.firstname }} {{ userInfo.lastname }} </span>
-                        <span v-else>{{ pseudo }} BLAUD </span>
+                        <span>{{ userInfo.firstname }} {{ userInfo.lastname }} </span>
                     </div>
                     <div class="user-banner_body_action">
-                        <div class="user-banner_body_action_edit-profil" @click="showModalProfil = !showModalProfil">
+                        <div class="user-banner_body_action_edit-profil" @click="showModalProfil">
                             <i class="fas fa-user-cog"></i>
+                        </div>
+                        <div class="user-banner_body_action_disconnet" @click="disconnect">
+                            <i class="fas fa-power-off"></i>
                         </div>
                     </div>
                 </div>                
             </div>
-<!-- Edit Profil Modal -->
-            <ProfilModal v-if="showModalProfil"/>
+            <ProfilModal v-if="$store.state.modalProfil" />
 <!-- Main Page -->
             <section>
                 <div class="user-msg">
                     <input v-model="message" type="text" name="message" id="" placeholder="Quoi de neuf aujourd'hui ?">
-                    <button type="submit" @click="showModalPost = !showModalPost"><i class="fas fa-link"></i> Poster !</button>
+                    <button type="submit" @click="showModalPost"><i class="fas fa-link"></i> Poster !</button>
                 </div>
-<!-- Edit Post Modal -->
-                <aside v-if="showModalPost" class="post-modal">
-                    <form id="post-form" enctype="multipart/form-data">
-                        <div class="post-modal_edit">
-                            <i class="fas fa-times" @click="showModalPost = !showModalPost"></i>
-                            <h2>Créer une publication</h2>
-                            <span>Votre message</span>
-                                <textarea @change="showMessage()" v-model="message" name="" id="" cols="60" rows="10"></textarea>
-                                <span>Joindre une image</span>
-                                <div class="post-modal_edit_join">
-                                    <button class="post-modal_edit_join_btn" @click="getPostFile()">Parcourir</button>
-                                    <input @change="postAttachmentUploaded()" type="file" name="image" id="join-img" style="display:none">
-                                    <div class="post-modal_edit_join_img-preview">
-                                        <img src="../assets/smith_gifle.jpg" alt="">
-                                    </div>
-                                </div>
-                                <BaseButton @click.prevent="sendPost()" value="Poster !" />
-                        </div>
-                    </form>
-                </aside>
+                <PostModal v-if="$store.state.modalPost" />
 <!-- Post -->
-                <div v-for="post in userPost" :key="post" class="user-post">
+                <div v-for="post in userPost" :key="post.id" class="user-post">
                     <div class="user-post_header">
                         <div class="user-post_header_pic">
-                            <img :src="post.userProfilImg" alt="Photo de profil du créateur du post">
+                            <img :src="post.user.imageUrl" alt="Photo de profil du créateur du post">
                         </div>
                         <div class="user-post_header_info">
                             <div class="user-post_header_info_name">
-                                <span>{{ post.userFullname }}</span>
+                                <span>{{ post.user.firstname }} {{ post.user.lastname }}</span>
                             </div>
                             <div class="user-post_header_info_date">
-                                <span>28 mars 2022</span>
+                                <span>Le {{ post.createdAt.slice(0,10).split('-').reverse().join('.') + ' à ' + post.createdAt.slice(11,16) }}</span>
                             </div>
                         </div>                        
                     </div>
@@ -69,8 +51,8 @@
                                     <span>{{ post.like }}</span>
                                 </div>
                                 <div class="user-post_body_pic_action_comment">
-                                <i class="far fa-comment" id="new-comment" @click="showModal = !showModal"></i>
-                                <span id="comment" @click="show = !show">2</span>
+                                <i class="far fa-comment" id="new-comment" @click="showModalComment"></i>
+                                <span id="comment" @click="show = !show"></span>
                                 </div>
                             </div>
                         </div>
@@ -88,18 +70,7 @@
                                     </div>
                                 </div>                               
                             </div>
-                    <aside v-if="showModal" id="comment-modal" class="modal">
-                        <div class="write-comment">
-                            <div class="write-comment_user-pic">
-                                <img src="../assets/moi.png" alt="">
-                            </div>
-                            <div class="write-comment_send">
-                                <input type="text" placeholder="Ajoutez un commentaire ...">
-                                <i class="fas fa-paper-plane" @click="showModal = !showModal"></i>
-                            </div>
-                            
-                            </div>
-                    </aside>
+                            <CommentModal v-if="$store.state.modalComment" />
                     </div>
                 </div>
             </section>
@@ -108,36 +79,31 @@
 </template>
 
 <script>
-/* import ModidyBtn from '../components/ModifyButton.vue'; */
-import BaseButton from '../components/BaseButton.vue';
 import ProfilModal from '../components/ProfilModal.vue'
+import PostModal from '../components/PostModal.vue'
+import CommentModal from '../components/CommentModal.vue'
+
 import axios from 'axios';
 let e = true;
 
 export default {
     name: 'HomePage',
-    components: {/* ModidyBtn,  */BaseButton, ProfilModal},
+    components: {ProfilModal, PostModal, CommentModal},
     data() {
         return {
             show: false,
-            showModal: false,
-            showModalProfil: false,
-            showModalPost: false,
-            name: true,
             userInfo: {},
-            userPost: {},
-            avatar: null,
-            postAttachment: null,
-            nom: '',
-            pseudo: '',            
-            message: ""
+            userPost: [],
+            postUser: []
         }
     },
     mounted() {
         let id = localStorage.getItem('id')
         axios.get('http://localhost:3000/api/user/' + id)
             .then(response => {
-                this.userInfo = response.data;                
+                this.userInfo = response.data;
+                this.$store.state.isUserConnected = true
+                               
             })
             .catch(error => {
                 console.log(error)
@@ -149,7 +115,8 @@ export default {
             })
             .catch(error => {
                 console.log(error)
-             });            
+             });
+
     },
     methods: {
         likeIt() {
@@ -165,70 +132,18 @@ export default {
                 this.like--
             }
         },
-        showMessage(){
-            console.log(this.message);
+        showModalProfil() {
+            this.$store.commit('SHOW_MODAL_PROFIL');
         },
-        changeName() {
-            this.name = false;
+        showModalPost() {
+            this.$store.commit('SHOW_MODAL_POST');
         },
-        getFile() {
-            document.querySelector('#user-avatar').click();
+        showModalComment() {
+            this.$store.commit('SHOW_MODAL_COMMENT');
         },
-        getPostFile() {
-            document.querySelector('#join-img').click();
-        },
-        imgUploaded(){
-            const inputFile = document.querySelector('#user-avatar')
-            this.avatar = inputFile.files[0];
-            console.log(this.avatar);
-        },
-        postAttachmentUploaded() {
-            const inputFilePost = document.querySelector('#join-img');
-            this.postAttachment = inputFilePost.files[0];
-            console.log(this.postAttachment)
-        },
-        getUserAvatar() {
-            const id = localStorage.getItem('id');
-            const formDataUser = new FormData();
-            formDataUser.append('image', this.avatar, this.avatar.name)
-            axios.post('http://localhost:3000/api/user/images/' + id, formDataUser)
-            .then((res) => {
-                console.log(res)
-                location.reload();
-            })
-            .catch((error) => console.log(error))
-        },
-        sendPost() {
-            const userId = localStorage.getItem('id');
-            const token = localStorage.getItem('token');
-            const config = {
-                headers: {
-                    "Authorization": "Bearer " + token 
-                }
-            }
-
-            const formDataPost = new FormData();
-            formDataPost.append('image', this.postAttachment);
-            formDataPost.append('content', this.message);
-            if(this.postAttachment !== null){
-                axios.post('http://localhost:3000/api/post/create/' + userId, formDataPost, config)
-                    .then((res) => {
-                        console.log(res);
-                        /* location.reload(); */
-                    })
-                    .catch((error) => console.log(error))
-            }
-            else {
-                /* const fdMessage = new FormData();
-                fdMessage.append('content', this.message)
-                axios.post('http://localhost:3000/api/post/message', fdMessage)
-                    .then((res) => {
-                        console.log(res);
-                        location.reload();
-                    })
-                    .catch((error) => console.log(error)) */
-                    alert(`Votre post nécessite d'y ajouter une image`)
-            }
+        disconnect() {
+            localStorage.clear();
+            this.$router.push({path: 'login'});
         }
     }
 }
@@ -281,7 +196,7 @@ main{
         padding: 15px 0;
     }
     @include touch-pad{
-        width: 470px;
+        width: 530px;
     }
     @include large-screen{
         justify-content: flex-start;
@@ -339,6 +254,9 @@ main{
             }
         &_action{
             display: flex;
+            @include mobile{
+                margin: 30px 0;
+            }
                 &_edit-profil{
                     background-color: #202020;
                     padding: 15px;
@@ -360,6 +278,9 @@ main{
                         transform: scale(1.3)
                     }
                     
+                }
+                &_disconnet{
+                    @extend .user-banner_body_action_edit-profil;
                 }
             }
     }
@@ -562,257 +483,5 @@ section{
 }
 #comment{
     cursor: pointer;
-}
-
-// Modals
-
-#comment-modal{
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  z-index: 1000;
-  backdrop-filter: blur(14px);
-  & .write-comment{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 80px;
-    width: 400px;
-    margin: 100px auto;
-    background-color: $bg-modal;
-    border-radius: 10px;
-    padding: 15px;
-    text-align: center;
-    font-weight: bold;
-    font-size: 16px;
-    transform-origin: center;
-    animation: show-modal .5s ease-in-out both;
-    @include mobile{
-        width: 290px;
-        margin: 50px auto;
-    }
-    &_user-pic{
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        overflow: hidden;
-        margin: 0 10px;
-        @include mobile{
-            display: none;
-        }
-        & img{
-            @include img-size;
-        }
-    }
-    & input{
-        margin: 0 10px;
-        height: 60px;
-        width: 250px;
-        border: none;
-        border-radius: 15px;
-        padding-left: 15px;
-        padding-right: 35px;
-        font-family: $font;
-        background-color: transparent;
-        color: #fff;
-        &::placeholder{
-            color: #fff;
-        }
-        @include mobile{
-            width: 200px;
-        }
-    }
-    &_send{
-        position: relative;
-        & i{
-            position: absolute;
-            right: 26px;
-            top: 22px;
-            color: $primary-color;
-            cursor: pointer;
-        }
-    }
-  }
-}
-
-.profil-modal{
-    width: 100%;
-    height: 100%;
-    z-index: 1000;
-    position: absolute;
-    top: 0;
-    left: 0;
-    backdrop-filter: blur(4px);
-    &_edit{
-        min-width: 350px;
-        position: absolute;
-        top: 100px;
-        left: 40%;
-        background-color: $bg-modal;
-        border-radius: 15px;
-        padding: 20px;
-        transform-origin: center;
-        animation: show-modal .5s ease-in-out both;
-        @include mobile{
-            left: 20px;
-            min-width: 300px;
-        }
-        &_title{
-            position: relative;
-            & h2{
-                color: $primary-color;
-            }
-            & i{
-                position: absolute;
-                top: -19px;
-                right: 5px;
-                cursor: pointer;
-            }
-        }
-        &_pic{
-            display: flex;
-            flex-direction: column;
-            &_info{
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin: 15px 0;
-            }
-            &_container{
-                display: flex;
-                align-self: center;
-                width: 100px;
-                height: 100px;
-                overflow: hidden;
-                border-radius: 50%;
-                & img{
-                    @include img-size;
-                }
-            }
-        }
-        &_name{
-            &_info{
-                @extend .profil-modal_edit_pic_info
-            }
-            &_input{
-                display: flex;
-                justify-content: space-around;
-                align-items: center;
-                margin: 15px 0;
-                & label{
-                    color: $primary-color;
-                }
-                & input{
-                    border-radius: 15px;
-                    padding: 7px;
-                    padding-left: 10px;
-                }
-            }
-        }
-    }
-}
-.post-modal{
-    display: flex;
-    justify-content: center;
-    backdrop-filter: blur(14px);
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    text-align: center;
-    z-index: 1000;
-    &_edit{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        position: relative;
-        margin-top: 150px;
-        width: 600px;
-        height: 650px;
-        background-color: $bg-modal;
-        border-radius: 15px;
-        overflow: hidden;
-        transform-origin: center;
-        animation: show-modal .5s ease-in-out both;
-        @include mobile{
-            width: 350px;
-            height: 800px;
-        }
-        & h2{
-            margin: 30px 0;
-        }
-        & span{
-            color: $primary-color;
-            font-weight: bold;
-            margin-top: 30px;
-        }
-        & p{
-            height: 100px;
-            padding: 20px;
-            word-break: break-all;
-            overflow-y: auto;
-        }
-        & textarea{
-            background-color: #202020;
-            border: none;
-            resize: none;
-            margin: 10px;
-            color: #fff;
-            font-family: $font;
-            @include mobile{
-                width: 340px;
-            }
-        }
-        & i{
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            cursor: pointer;
-        }
-        &_join{
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            margin-top: 30px;
-            @include mobile{
-                flex-direction: column;
-            }
-            &_img-preview{
-                margin: 0 40px;
-                width: 230px;
-                height: 150px;
-                overflow: hidden;
-                @include mobile{
-                    width: 260px;
-                    height: 230px;
-                }
-                & img{
-                    width: 100%;
-                    height: 100%;
-                    object-fit: contain
-                }
-            }
-            &_btn{
-                @include button;
-                @include mobile{
-                    margin-top: 10px;
-                    margin-bottom: 30px;
-                }
-            }
-        }
-    }
-}
-// Animation 
-@keyframes show-modal{
-    from{
-        transform: scale(0);
-    }
-    to{
-        transform: scale(1);
-    }
 }
 </style>
