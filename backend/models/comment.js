@@ -11,6 +11,14 @@ const Comment = sequelize.define('comment', {
     content: {
         type: Sequelize.STRING,
         allowNull: false
+    },
+    userId: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+    },
+    postId: {
+        type: Sequelize.INTEGER,
+        allowNull: false
     }
 });
 
