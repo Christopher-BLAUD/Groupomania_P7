@@ -7,8 +7,7 @@ require('dotenv').config();
 
 
 
-// Affiche la mur de publication avec les informations utilisateurs
-
+// Affiche le mur de publication avec les informations utilisateurs
 exports.getUser = (req, res, next) => {
     User.findOne({where: {id: req.params.id}})
     .then(user => res.status(200).json(user))
@@ -17,7 +16,6 @@ exports.getUser = (req, res, next) => {
 
 
 // Inscrisption de l'utilisateur 
-
 exports.signUp = (req, res, next) => {
 sequelize.sync()
     bcrypt.hash(req.body.password, 10)
@@ -41,7 +39,6 @@ sequelize.sync()
 
 
 // Connexion de l'utilisateur et redirection vers le mur de publication
-
 exports.login = (req, res, next) => {
     User.findOne({ where: {email: req.body.email}})
     .then(user => {
@@ -69,8 +66,8 @@ exports.login = (req, res, next) => {
     .catch(error => res.status(500).json({error}))
 };
 
-// Ajout d'une image de profil
 
+// Ajout d'une image de profil
 exports.addUserAvatar =  (req, res, next) => {
     console.log(req.body);
     console.log(req.file);

@@ -18,8 +18,23 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
-    name: 'CommentPage'
+    name: 'CommentPage',
+    data() {
+        return {
+            comments: []
+        }
+    },
+    mounted() {
+        let postId = this.$store.state.commentPostId;
+        axios.get('http://localhost:3000/api/comment/post/' + postId)
+            .then(res => {
+                this.comments = res.data
+            })
+            .catch(error => console.log(error)) 
+    }
 }
 </script>
 
@@ -31,6 +46,7 @@ export default {
     min-height: 100vh;
     &_title{
         margin: 30px 0;
+        color: $primary-color;
     }
     &_body{
         padding: 10px;

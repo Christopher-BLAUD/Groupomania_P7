@@ -51,7 +51,7 @@
                                     <span>{{ post.like }}</span>
                                 </div>
                                 <div class="user-post_body_pic_action_comment">
-                                <i class="far fa-comment" id="new-comment" @click="showComments"></i>
+                                <i class="far fa-comment" id="new-comment" @click="getComments(post.id)"></i>
                                 <span id="comment"></span>
                                 </div>
                             </div>
@@ -59,17 +59,10 @@
                         <div class="user-post_body_legend">
                             <p>{{ post.content }}</p>
                         </div>
-                            <div class="user-post_body_comments" v-if="show">
-                                <div v-for="comment in post.comments" :key="comment" class="user-post_body_comment-container">
-                                    <div class="user-post_body_comment-container_user-pic">
-                                        <img :src="comment.userPicture" alt="Photo de profil du créateur du commentaire">
-                                    </div>
-                                    <div class="user-post_body_comment-container_username">
-                                        <span>{{ comment.userName }}</span>
-                                        <p>{{ comment.message }}</p>
-                                    </div>
-                                </div>                               
-                            </div>
+                        <div class="user-post_body_add-comment">
+                                <input v-model="comment" type="text" name="comment" placeholder="Ajoutez un commentaire ...">
+                                <button type="submit" @click="sendComment(post.id)">Publier</button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -90,6 +83,7 @@ export default {
     data() {
         return {
             show: false,
+            comment: "",
             userInfo: {},
             userPost: [],
             postUser: []
@@ -130,13 +124,26 @@ export default {
                 this.like--
             }
         },
+        sendComment(postId) {
+            const userId = localStorage.getItem('id');
+            let comment = this.comment;
+            axios.post('http://localhost:3000/api/comment/create', {userId, postId, comment})
+                .then(res => console.log(res))
+                .catch(error => console.log(error))
+            console.log(userId)
+            console.log(postId)
+            console.log(this.comment)
+        },
         showModalProfil() {
             this.$store.commit('SHOW_MODAL_PROFIL');
         },
         showModalPost() {
             this.$store.commit('SHOW_MODAL_POST');
         },
-        showComments() {
+        getComments(postId) {
+            const userId = localStorage.getItem('id');
+            this.$store.state.commentUserId = userId
+            this.$store.state.commentPostId = postId
             this.$router.push({path: '/post/comments'})
         },
         disconnect() {
@@ -390,6 +397,45 @@ section{
     }
     &_body{
         position: relative;
+        &_add-comment{
+            display: flex;
+            position: relative;
+            justify-content: center;
+            margin: 30px 0;
+            & input{
+                width: 500px;
+                height: 35px;
+                padding-left: 15px;
+                margin: 0 30px;
+                border-radius: 20px;
+                background-color: #363434;
+                border: none;
+                color: #fff;
+                @include mobile{
+                    width: 255px;
+                    margin: 0;
+                }
+                &::placeholder{
+                    color: #fff;
+                    font-family: $font;
+                    font-weight: lighter;
+                }
+            }
+            & button{
+                position: absolute;
+                top: 27%;
+                right: 200px;
+                border: none;
+                background-color: transparent;
+                font-weight: bold;
+                font-family: $font;
+                color: $primary-color;
+                cursor: pointer;
+                @include mobile{
+                    right: 28px;
+                }
+            }
+        }
         &_pic{
             overflow: hidden;
             margin: 0 15px;
@@ -424,50 +470,6 @@ section{
                 }
             }
         }
-        &_comments{
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        &_comment-container{
-            display: flex;
-            align-items: center;
-            @include mobile{
-                margin: 20px 0;
-            }
-            &_user-pic{
-                width: 60px;
-                min-width: 30px;
-                height: 60px;
-                overflow: hidden;
-                border-radius: 50%;
-                margin: 15px;
-                @include mobile{
-                    align-self: center;
-                    margin: 0;
-                    margin-bottom: 0;
-                    width: 30px;
-                    height: 30px
-                }
-                & img{
-                    @include img-size;
-                }
-            }
-            & p{
-                font-size: 15px;
-                font-weight: lighter;
-            }
-            &_username{
-            display: flex;
-            align-items: center;
-            & span{
-                margin: 0 10px;
-                color: $primary-color;
-                @include mobile{
-                    text-align: start;
-                }
-            };
-        }
         }
         &_legend{
             color: $primary-color;
@@ -476,9 +478,8 @@ section{
                 font-size: 16px;
             }
         }
-        
     }
-}
+
 #comment{
     cursor: pointer;
 }

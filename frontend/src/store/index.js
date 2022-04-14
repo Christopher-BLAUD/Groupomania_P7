@@ -2,10 +2,11 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
-    // Affichage des modals
     modalProfil: false,
     modalPost: false,
     modalComment: false,
+    commentUserId: null,
+    commentPostId: null 
   },
   getters: {
   },

@@ -1,9 +1,15 @@
 const express = require('express');
 const app = express();
+
+// Routes
 const userRoutes = require('./routes/user');
 const postRoutes = require('./routes/post');
+const commentRoutes = require('./routes/comment');
+
+// Sequelize
 const sequelize = require('./utils/database');
 
+// Models
 const User = require('./models/user');
 const Post = require('./models/post');
 const Comment = require('./models/comment');
@@ -26,15 +32,13 @@ app.use((req, res, next) => {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true}));
 
-/* User.belongsToMany(Post, { through: 'users_posts'});
-Post.belongsToMany(User, { through: 'users_posts'}); */
-/* User.hasMany(Post); */
-
 
 // Définition des relations
 
 User.hasMany(Post);
-Post.belongsTo(User);
+Post.belongsTo(User, {
+  onDelete: 'CASCADE'
+});
 Comment.belongsTo(User, {
   onDelete: 'CASCADE'
 });
@@ -57,6 +61,7 @@ app.use(express.static('images'));
 
 app.use('/api/user', userRoutes);
 app.use('/api/post', postRoutes);
+app.use('/api/comment', commentRoutes)
 
 
 
