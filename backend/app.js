@@ -3,8 +3,11 @@ const app = express();
 const userRoutes = require('./routes/user');
 const postRoutes = require('./routes/post');
 const sequelize = require('./utils/database');
+
 const User = require('./models/user');
 const Post = require('./models/post');
+const Comment = require('./models/comment');
+
 const bodyParser = require('body-parser');
 const path = require('path');
 const { hasUncaughtExceptionCaptureCallback } = require('process');
@@ -27,8 +30,17 @@ app.use((req, res, next) => {
 Post.belongsToMany(User, { through: 'users_posts'}); */
 /* User.hasMany(Post); */
 
+
+// Définition des relations
+
 User.hasMany(Post);
 Post.belongsTo(User);
+Comment.belongsTo(User, {
+  onDelete: 'CASCADE'
+});
+Comment.belongsTo(Post, {
+  onDelete: 'CASCADE'
+});
 
 sequelize
   .sync()

@@ -3,6 +3,7 @@ import LoginPage from '../views/Login.vue'
 import SignUpPage from '../views/SignUp.vue'
 import HomePage from '../views/Home.vue'
 import Index from '../views/Index.vue'
+import CommentPage from '../views/Comment.vue'
 
 const routes = [
   {
@@ -24,6 +25,11 @@ const routes = [
     path: '/home',
     name: 'home',
     component: HomePage
+  },
+  {
+    path: '/post/comments',
+    name: 'comment',
+    component: CommentPage
   }
 ]
 

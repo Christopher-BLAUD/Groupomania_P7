@@ -51,8 +51,8 @@
                                     <span>{{ post.like }}</span>
                                 </div>
                                 <div class="user-post_body_pic_action_comment">
-                                <i class="far fa-comment" id="new-comment" @click="showModalComment"></i>
-                                <span id="comment" @click="show = !show"></span>
+                                <i class="far fa-comment" id="new-comment" @click="showComments"></i>
+                                <span id="comment"></span>
                                 </div>
                             </div>
                         </div>
@@ -70,7 +70,6 @@
                                     </div>
                                 </div>                               
                             </div>
-                            <CommentModal v-if="$store.state.modalComment" />
                     </div>
                 </div>
             </section>
@@ -81,14 +80,13 @@
 <script>
 import ProfilModal from '../components/ProfilModal.vue'
 import PostModal from '../components/PostModal.vue'
-import CommentModal from '../components/CommentModal.vue'
 
 import axios from 'axios';
 let e = true;
 
 export default {
     name: 'HomePage',
-    components: {ProfilModal, PostModal, CommentModal},
+    components: {ProfilModal, PostModal},
     data() {
         return {
             show: false,
@@ -138,12 +136,12 @@ export default {
         showModalPost() {
             this.$store.commit('SHOW_MODAL_POST');
         },
-        showModalComment() {
-            this.$store.commit('SHOW_MODAL_COMMENT');
+        showComments() {
+            this.$router.push({path: '/post/comments'})
         },
         disconnect() {
             localStorage.clear();
-            this.$router.push({path: 'login'});
+            this.$router.push({path: '/login'});
         }
     }
 }
