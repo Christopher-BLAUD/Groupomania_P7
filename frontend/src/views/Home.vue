@@ -30,16 +30,21 @@
 <!-- Post -->
                 <div v-for="post in userPost" :key="post.id" class="user-post">
                     <div class="user-post_header">
-                        <div class="user-post_header_pic">
-                            <img :src="post.user.imageUrl" alt="Photo de profil du créateur du post">
+                        <div class="user-post_header_user-info">
+                            <div class="user-post_header_pic">
+                                <img :src="post.user.imageUrl" alt="Photo de profil du créateur du post">
+                            </div>
+                            <div class="user-post_header_info">
+                                <div class="user-post_header_info_name">
+                                    <span>{{ post.user.firstname }} {{ post.user.lastname }}</span>
+                                </div>
+                                <div class="user-post_header_info_date">
+                                    <span>Le {{ post.createdAt.slice(0,10).split('-').reverse().join('.') + ' à ' + post.createdAt.slice(11,16) }}</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="user-post_header_info">
-                            <div class="user-post_header_info_name">
-                                <span>{{ post.user.firstname }} {{ post.user.lastname }}</span>
-                            </div>
-                            <div class="user-post_header_info_date">
-                                <span>Le {{ post.createdAt.slice(0,10).split('-').reverse().join('.') + ' à ' + post.createdAt.slice(11,16) }}</span>
-                            </div>
+                        <div v-if="post.user.id == userId" @click="deletePost(post.id)" class="user-post_header_delete">
+                            <i class="far fa-trash-alt"></i>
                         </div>                        
                     </div>
                     <div class="user-post_body">
@@ -58,10 +63,6 @@
                         </div>
                         <div class="user-post_body_legend">
                             <p>{{ post.content }}</p>
-                        </div>
-                        <div class="user-post_body_add-comment">
-                                <input v-model="comment" type="text" name="comment" placeholder="Ajoutez un commentaire ...">
-                                <button type="submit" @click="sendComment(post.id)">Publier</button>
                         </div>
                     </div>
                 </div>
@@ -83,10 +84,10 @@ export default {
     data() {
         return {
             show: false,
-            comment: "",
             userInfo: {},
             userPost: [],
-            postUser: []
+            postUser: [],
+            userId: localStorage.getItem('id')
         }
     },
     mounted() {
@@ -124,16 +125,6 @@ export default {
                 this.like--
             }
         },
-        sendComment(postId) {
-            const userId = localStorage.getItem('id');
-            let comment = this.comment;
-            axios.post('http://localhost:3000/api/comment/create', {userId, postId, comment})
-                .then(res => console.log(res))
-                .catch(error => console.log(error))
-            console.log(userId)
-            console.log(postId)
-            console.log(this.comment)
-        },
         showModalProfil() {
             this.$store.commit('SHOW_MODAL_PROFIL');
         },
@@ -141,14 +132,24 @@ export default {
             this.$store.commit('SHOW_MODAL_POST');
         },
         getComments(postId) {
-            const userId = localStorage.getItem('id');
-            this.$store.state.commentUserId = userId
-            this.$store.state.commentPostId = postId
+            /* const userId = localStorage.getItem('id'); */
+            /* this.$store.state.commentUserId = userId
+            this.$store.state.commentPostId = postId */
+            localStorage.setItem('postId', postId)
             this.$router.push({path: '/post/comments'})
         },
         disconnect() {
             localStorage.clear();
             this.$router.push({path: '/login'});
+        },
+        deletePost(id) {
+            if(confirm('Êtes-vous sur de vouloir supprimer ce post ?'))
+            axios.delete('http://localhost:3000/api/post/delete/' + id)
+                .then(res => {
+                    console.log(res);
+                    location.reload();
+                    })
+                .catch((error) => console.log(error))
         }
     }
 }
@@ -305,6 +306,7 @@ section{
         width: 700px;
         position: relative;
         margin: 50px 0;
+        margin-left: 60px;
         background-color: #202020;
         border-radius: 25px;
         box-shadow: 11px 9px 21px #030202;
@@ -320,6 +322,7 @@ section{
             width: 350px;
             margin: 20px 0;
             border-radius: 15px;
+            margin-left: 0;
         }
         @include touch-pad{
             width: 650px;
@@ -350,22 +353,37 @@ section{
     }
 
 .user-post{
-    width: 900px;
+    width: 840px;
     background-color: #202020;
     border-radius: 20px;
     margin: 30px 0;
     box-shadow: 11px 9px 21px #030202;
     padding: 0 15px;
+    margin-left: 60px;
     @include mobile{
         width: calc(100% - 60px);
+        margin-left: 0;
     }
     @include touch-pad{
         width: 80%;
+        margin-left: 0;
     }
     &_header{
         display: flex;
         align-items: center;
+        justify-content: space-between;
         margin-bottom: 15px;
+        &_user-info{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        &_delete{
+            cursor: pointer;
+            &:hover{
+                color: darken(#fff, 15%);
+            }
+        }
         &_pic{
             width: 50px;
             height: 50px;
@@ -397,45 +415,6 @@ section{
     }
     &_body{
         position: relative;
-        &_add-comment{
-            display: flex;
-            position: relative;
-            justify-content: center;
-            margin: 30px 0;
-            & input{
-                width: 500px;
-                height: 35px;
-                padding-left: 15px;
-                margin: 0 30px;
-                border-radius: 20px;
-                background-color: #363434;
-                border: none;
-                color: #fff;
-                @include mobile{
-                    width: 255px;
-                    margin: 0;
-                }
-                &::placeholder{
-                    color: #fff;
-                    font-family: $font;
-                    font-weight: lighter;
-                }
-            }
-            & button{
-                position: absolute;
-                top: 27%;
-                right: 200px;
-                border: none;
-                background-color: transparent;
-                font-weight: bold;
-                font-family: $font;
-                color: $primary-color;
-                cursor: pointer;
-                @include mobile{
-                    right: 28px;
-                }
-            }
-        }
         &_pic{
             overflow: hidden;
             margin: 0 15px;

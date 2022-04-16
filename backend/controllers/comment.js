@@ -6,9 +6,13 @@ exports.getAllComments = (req, res, next) => {
     Comment.findAll({
         where: {
           postId: req.params.id
-        }
+        },
+        include: [{
+            model: User,
+            require: true
+        }]
     })
-    .then(res => res.status(200).json(res))
+    .then(comments => res.status(200).json(comments))
     .catch(error => res.status(404).json(error))
 
 };
@@ -22,3 +26,23 @@ exports.createComment = (req, res, next) => {
     .then(comment => res.status(201).json({message: "Commentaire ajouté avec succès !", comment}))
     .catch(error => res.status(500).json(error))
 };
+
+exports.deleteComment = (req, res, next) => {
+    Comment.destroy({
+        where: {
+            id: req.params.id
+        }
+    })
+    .then(() => res.status(200).json({message: "Commentaire supprimé"}))
+    .catch(error => res.status(500).json(error))
+}
+
+exports.commentsCount = (req, res, next) => {
+    Comment.count({
+        where: {
+            postId: req.params.id
+        }
+    })
+        .then(comment => res.status(200).json(comment))
+        .catch(error => res.status(500).json(error))
+}

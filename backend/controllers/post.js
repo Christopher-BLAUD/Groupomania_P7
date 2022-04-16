@@ -28,3 +28,13 @@ sequelize.sync()
     .then(post => res.status(201).json({message: 'Publication avec photo envoyée avec succés', post}))
     .catch(error => {res.status(500).json(error)})
 }
+
+exports.deletePost = (req, res, next) => {
+    Post.destroy({
+        where: {
+            id: req.params.id
+        }
+    })
+    .then(() => res.status(200).json({message: 'Le post a été supprimé !'}))
+    .catch(error => res.status(500).json(error))
+}
