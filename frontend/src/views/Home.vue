@@ -125,11 +125,16 @@ export default {
             this.$router.push({path: '/login'});
         },
         deletePost(id) {
+            const token = localStorage.getItem('token');
             if(confirm('Êtes-vous sûr(e) de vouloir supprimer ce post ?'))
             axios.delete('http://localhost:3000/api/post/delete/' + id, {
                 data: {
                     userId: localStorage.getItem('id')
+                },
+                headers: {
+                    "Authorization": "Bearer " + token 
                 }
+
             })
                 .then(res => {
                     console.log(res);

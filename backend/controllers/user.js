@@ -76,7 +76,7 @@ exports.addUserAvatar =  (req, res, next) => {
     }, {
         where: {id: req.params.id}
     })
-        .then(user => res.status(200).json({message: 'Image uploadée avec succès !'}))
+        .then(() => res.status(200).json({message: 'Image uploadée avec succès !'}))
         .catch((error) => {res.status(500).json(error)})
 }
 
@@ -91,6 +91,6 @@ exports.deleteUserAccount = (req, res, next) => {
             model: Post
         }
     })
-        .then(user => res.status(200).json({message: 'Le compte a bien été supprimé', user}))
+        .then(() => res.status(200).json({message: 'Le compte a bien été supprimé'}))
         .catch((error) => {res.status(500).json(error)})
 }

@@ -46,10 +46,16 @@ export default {
             console.log(this.avatar);
         },
         getUserAvatar() {
-            const id = localStorage.getItem('id');
+            const userId = localStorage.getItem('id');
             const formDataUser = new FormData();
+            const token = localStorage.getItem('token');
             formDataUser.append('image', this.avatar, this.avatar.name)
-            axios.post('http://localhost:3000/api/user/images/' + id, formDataUser)
+            const config = {
+                headers: {
+                    "Authorization": "Bearer " + token 
+                }
+            }
+            axios.post('http://localhost:3000/api/user/images/' + userId, formDataUser, config)
             .then((res) => {
                 console.log(res)
                 location.reload();
@@ -60,8 +66,14 @@ export default {
             this.$store.commit('SHOW_MODAL_PROFIL');
         },
         deleteAccount() {
-            const id = localStorage.getItem('id');
-            axios.delete('http://localhost:3000/api/user/delete-account/' + id)
+            const userId = localStorage.getItem('id');
+            const token = localStorage.getItem('token');
+            const config = {
+                headers: {
+                    "Authorization": "Bearer " + token 
+                }
+            }
+            axios.delete('http://localhost:3000/api/user/delete-account/' + userId, config)
             .then(() => {
                 if(confirm('Cette action est irréversible. Êtes-vous sûr ?')){
                     localStorage.clear();

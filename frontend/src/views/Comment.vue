@@ -73,8 +73,13 @@ export default {
         sendComment() {
             const userId = localStorage.getItem('id');
             const postId = localStorage.getItem('postId');
+            const token = localStorage.getItem('token');
             let comment = this.comment;
-            axios.post('http://localhost:3000/api/comment/create', {userId, postId, comment})
+            axios.post('http://localhost:3000/api/comment/create', {userId, postId, comment}, {
+                headers: {
+                    "Authorization": "Bearer " + token 
+                }
+            })
                 .then(res => {
                     console.log(res);
                     location.reload();
