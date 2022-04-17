@@ -7,7 +7,8 @@ export default createStore({
     modalComment: false,
     commentUserId: null,
     commentPostId: null,
-    commentsCount: null 
+    commentsCount: null,
+    currentUserId: null,
   },
   getters: {
   },

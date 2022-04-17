@@ -82,6 +82,7 @@ export default {
 .post-modal{
     display: flex;
     justify-content: center;
+    align-items: center;
     backdrop-filter: blur(14px);
     position: absolute;
     left: 0;
@@ -95,9 +96,8 @@ export default {
         flex-direction: column;
         align-items: center;
         position: relative;
-        margin-top: 150px;
         width: 600px;
-        height: 540px;
+        height: 550px;
         background-color: $bg-modal;
         border-radius: 15px;
         overflow: hidden;
@@ -105,7 +105,10 @@ export default {
         animation: show-modal .5s ease-in-out both;
         @include mobile{
             width: 350px;
-            height: 590px;
+            height: 530px;
+        }
+        @include touch-pad{
+            height: 580px;
         }
         & h2{
             margin: 30px 0;
@@ -114,6 +117,9 @@ export default {
             color: $primary-color;
             font-weight: bold;
             margin-top: 30px;
+            @include mobile{
+                margin-top: 15px;
+            }
         }
         & p{
             height: 100px;
@@ -125,6 +131,7 @@ export default {
             background-color: #202020;
             border: none;
             resize: none;
+            min-height: 150px;
             margin: 10px;
             color: #fff;
             font-family: $font;
@@ -145,6 +152,7 @@ export default {
             margin: 30px;
             @include mobile{
                 flex-direction: column;
+                margin: 10px;
             }
             &_img-preview{
                 margin: 0 40px;

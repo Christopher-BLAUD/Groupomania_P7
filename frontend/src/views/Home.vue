@@ -43,7 +43,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div v-if="post.user.id == userId" @click="deletePost(post.id)" class="user-post_header_delete">
+                        <div v-if="post.userId == userId" @click="deletePost(post.id)" class="user-post_header_delete">
                             <i class="far fa-trash-alt"></i>
                         </div>                        
                     </div>
@@ -51,13 +51,12 @@
                         <div class="user-post_body_pic">
                             <img :src="post.image" alt="Image du post">
                             <div class="user-post_body_pic_action">
-                                <div class="user-post_body_pic_action_like">
-                                    <i class="far fa-heart" id="like-btn" @click="likeIt()"></i>
-                                    <span>{{ post.like }}</span>
-                                </div>
-                                <div class="user-post_body_pic_action_comment">
-                                <i class="far fa-comment" id="new-comment" @click="getComments(post.id)"></i>
-                                <span id="comment"></span>
+                                <!-- <div @click="likePost(post.id)" class="user-post_body_pic_action_like">
+                                    <i class="far fa-heart" id="like-btn"></i>
+                                </div> -->
+                                <div @click="getComments(post.id)" class="user-post_body_pic_action_comment">
+                                    <i class="far fa-comment" id="new-comment"></i>
+                                    <span id="comment">Voir les commentaires</span>
                                 </div>
                             </div>
                         </div>
@@ -76,14 +75,14 @@ import ProfilModal from '../components/ProfilModal.vue'
 import PostModal from '../components/PostModal.vue'
 
 import axios from 'axios';
-let e = true;
+
+
 
 export default {
     name: 'HomePage',
     components: {ProfilModal, PostModal},
     data() {
         return {
-            show: false,
             userInfo: {},
             userPost: [],
             postUser: [],
@@ -109,22 +108,8 @@ export default {
             .catch(error => {
                 console.log(error)
              });
-
     },
     methods: {
-        likeIt() {
-            const heart = document.querySelector('#like-btn');
-            if(e){
-                heart.classList.replace("far", "fas");
-                e = false;
-                this.like++
-            }
-            else{
-                heart.classList.replace("fas", "far");
-                e = true;
-                this.like--
-            }
-        },
         showModalProfil() {
             this.$store.commit('SHOW_MODAL_PROFIL');
         },
@@ -132,9 +117,6 @@ export default {
             this.$store.commit('SHOW_MODAL_POST');
         },
         getComments(postId) {
-            /* const userId = localStorage.getItem('id'); */
-            /* this.$store.state.commentUserId = userId
-            this.$store.state.commentPostId = postId */
             localStorage.setItem('postId', postId)
             this.$router.push({path: '/post/comments'})
         },
@@ -143,14 +125,24 @@ export default {
             this.$router.push({path: '/login'});
         },
         deletePost(id) {
-            if(confirm('Êtes-vous sur de vouloir supprimer ce post ?'))
-            axios.delete('http://localhost:3000/api/post/delete/' + id)
+            if(confirm('Êtes-vous sûr(e) de vouloir supprimer ce post ?'))
+            axios.delete('http://localhost:3000/api/post/delete/' + id, {
+                data: {
+                    userId: localStorage.getItem('id')
+                }
+            })
                 .then(res => {
                     console.log(res);
                     location.reload();
                     })
                 .catch((error) => console.log(error))
-        }
+        },
+        /* likePost(id) {
+            const userId = localStorage.getItem('id');
+            axios.post('http://localhost:3000/api/like/' + id, {userId})
+            .then(res => console.log(res))
+            .catch(error => console.log(error))
+        } */
     }
 }
 
@@ -178,11 +170,6 @@ main{
         width: 100%;
         align-items: center;
     }
-    @include large-screen{
-        flex-direction: row;
-        justify-content: space-between;
-        padding-right: 100px;
-    }
 }
 .user-banner{
     min-height: 125px;
@@ -195,7 +182,7 @@ main{
     justify-content: space-around;
     align-items: center;
     position: relative;
-    background-color: #0000001c;
+    /* background-color: #0000001c; */
     border-radius: 15px;
     @include mobile{
         width: 330px;
@@ -203,9 +190,6 @@ main{
     }
     @include touch-pad{
         width: 530px;
-    }
-    @include large-screen{
-        justify-content: flex-start;
     }
     &_body{
         display: flex;
@@ -418,24 +402,27 @@ section{
         &_pic{
             overflow: hidden;
             margin: 0 15px;
+            height: 568px;
             border-radius: 15px;
             position: relative;
             & img{
                 @include img-size;
+                object-fit: contain!important;
             }
             @include mobile{
                 margin: 0;
+                height: auto;
             }
             &_action{
                 display: flex;
                 align-items: center;
                 padding: 0 10px;
                 position: absolute;
-                bottom: 0;
+                bottom: -1px;
                 background-color: #00000066;
-                backdrop-filter: blur(4px);
-                width: 100%;
-                height: 40px;
+                backdrop-filter: blur(80px);
+                width: calc(100% - 10px);
+                height: 50px;
                 & i{
                     text-decoration: none;
                     color: $primary-color;
@@ -446,6 +433,11 @@ section{
                 & span{
                     font-size: 14px;
                     margin-right: 15px;
+                }
+                &_comment{
+                    display: flex;
+                    align-items: center;
+                    color: $primary-color;
                 }
             }
         }

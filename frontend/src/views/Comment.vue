@@ -1,12 +1,18 @@
 <template>
     <div class="comments">
         <div class="comments_title">
+            <div class="comments_title_come-back">
+                <router-link to="/home">
+                    <i class="fas fa-arrow-alt-circle-left"></i>
+                    <span>Retour au fil d'actualité</span>
+                </router-link>
+            </div>
             <h2>Commentaires</h2>
         </div>
         <div class="comments_body">
             <div v-for="comment in comments" :key="comment.id" class="comments_body_message">
                 <div class="comments_body_message_header">
-                    <div v-if="comment.user.id == userId" @click="deleteComment(comment.id)" class="comments_body_message_delete">
+                    <div v-if="comment.userId == userId" @click="deleteComment(comment.id)" class="comments_body_message_delete">
                         <i class="far fa-trash-alt"></i>
                     </div>
                     <div class="comments_body_message_user-pic">
@@ -89,14 +95,44 @@ export default {
     flex-direction: column;
     min-height: 100vh;
     &_title{
+        display: flex;
+        position: relative;
+        justify-content: center;
+        align-items: center;
+        padding: 0 15px;
         margin: 30px 0;
         color: $primary-color;
+        @include mobile{
+            margin-bottom: 0;
+        }
+        &_come-back{
+            position: absolute;
+            left: 0;
+            & a{
+                display: flex;
+                align-items: center;
+                margin: 0 15px;
+                font-size: 1.5em;
+                color: #fff;
+                cursor: pointer;
+                text-decoration: none;
+                & span{
+                    margin: 0 10px;
+                    font-size: 12px;
+                    color: #fff;
+                    @include mobile{
+                        display: none;
+                    }
+                }
+            }
+        }
     }
     &_body{
         display: flex;
         flex-direction: column;
         align-items: flex-start;
         justify-content: center;
+        margin-top: 60px;
         @include mobile{
             margin-left: 0;
             width: 320px;

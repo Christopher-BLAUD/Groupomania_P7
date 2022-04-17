@@ -62,15 +62,15 @@ export default {
             password: this.password
           })
           .then((response) => {
-            console.log(response)
             localStorage.setItem('id', response.data.userId)
+            this.$store.state.currentUserId = response.data.userId;
             localStorage.setItem('token', response.data.token)
             this.$router.push({name: 'home'})
           })
-          .catch(error => console.log(error));
-        }
-        else{
-          unknowId.classList.add('reveal');
+          .catch(error => {
+            console.log(error);
+            unknowId.classList.add('reveal');
+            });
         }
       },
       // Contrôle du mot de passe

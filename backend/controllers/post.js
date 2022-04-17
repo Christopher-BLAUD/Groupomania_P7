@@ -1,20 +1,36 @@
 const sequelize = require('../utils/database');
 const Post = require('../models/post');
 const User = require('../models/user');
+const Like = require('../models/like')
 
 
 exports.getPost = (req, res, next) => {
     Post.findAll({
-        include: [{
-            model: User,
-            require: true
-        }],
+        include: [
+            {
+                model: User,
+                require: true
+            }
+    ],
         order: [['createdAt', 'DESC']]
     })
     .then(posts => res.status(200).json(posts))
     .catch((error) => res.status(500).json(error))
     
 }
+
+/* exports.getPostLike = (req, res, next) => {
+    Post.findAll({
+        include: [
+            {
+                model: Like,
+                require: true
+            }
+    ]
+    })
+    .then(postLikes => res.status(200).json(postLikes))
+    .catch((error) => res.status(500).json(error))
+} */
 
 exports.createPost = (req, res, next) => {
 sequelize.sync()
@@ -32,7 +48,8 @@ sequelize.sync()
 exports.deletePost = (req, res, next) => {
     Post.destroy({
         where: {
-            id: req.params.id
+            id: req.params.id,
+            userId: req.body.userId
         }
     })
     .then(() => res.status(200).json({message: 'Le post a été supprimé !'}))
