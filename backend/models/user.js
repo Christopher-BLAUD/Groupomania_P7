@@ -28,7 +28,11 @@ const User = sequelize.define('user', {
     imageUrl: {
         type: Sequelize.STRING,
         allowNull: true
-    }
+    },
+    isAdmin: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false
+    },
 });
 
 module.exports = User;

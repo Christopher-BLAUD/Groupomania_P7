@@ -7,12 +7,15 @@
                     <span>Retour au fil d'actualité</span>
                 </router-link>
             </div>
-            <h2>Commentaires</h2>
+            <h2 v-if="comments.length >= 1">Commentaires</h2>
         </div>
         <div class="comments_body">
-            <div v-for="comment in comments" :key="comment.id" class="comments_body_message">
+            <div v-if="comments.length == 0" class="comments_body_no-comments">
+                <span>Aucun commentaire pour le moment.</span>
+            </div>
+            <div v-else v-for="comment in comments" :key="comment.id" class="comments_body_message">
                 <div class="comments_body_message_header">
-                    <div v-if="comment.userId == userId" @click="deleteComment(comment.id)" class="comments_body_message_delete">
+                    <div v-if="comment.userId == userId || userInfo.isAdmin" @click="deleteComment(comment.id)" class="comments_body_message_delete">
                         <i class="far fa-trash-alt"></i>
                     </div>
                     <div class="comments_body_message_user-pic">
@@ -41,6 +44,7 @@ export default {
             comments: [],
             comment: "",
             commentsCount: null,
+            userInfo: {},
             userId: localStorage.getItem('id')
         }
     },
@@ -50,8 +54,19 @@ export default {
             .then(res => {
                 this.comments = res.data;
                 this.hasComments = true
+                console.log(this.comments)
             })
             .catch(error => console.log(error));
+        let id = localStorage.getItem('id')
+        axios.get('http://localhost:3000/api/user/' + id)
+            .then(response => {
+                this.userInfo = response.data;
+                console.log(this.userInfo.isAdmin)
+                               
+            })
+            .catch(error => {
+                console.log(error)
+             });
     },
     methods: {
         deleteComment(id){
@@ -61,7 +76,8 @@ export default {
                     "Authorization": "Bearer " + token 
                 },
                 data: {
-                    userId: localStorage.getItem('id')
+                    userId: localStorage.getItem('id'),
+                    isAdmin: this.userInfo.isAdmin
                 }
             })
                 .then(res => {
@@ -140,7 +156,6 @@ export default {
         margin-top: 60px;
         @include mobile{
             margin-left: 0;
-            width: 320px;
         }
         &_message{
             display: flex;
@@ -187,6 +202,13 @@ export default {
                 }
             }
         }
+        &_no-comments{
+            display: flex;
+            width: 100%;
+            justify-content: center;
+            margin-bottom: 30px;
+            font-size: 20px;
+        }
     }
     &_add{
             display: flex;
@@ -196,7 +218,7 @@ export default {
             margin: 30px 0;
             width: 500px;
             @include mobile{
-                width: 365px;
+                width: 320px;
             }
             & input{
                 width: 100%;
@@ -227,7 +249,7 @@ export default {
                 color: $primary-color;
                 cursor: pointer;
                 @include mobile{
-                    right: 57px;
+                    right: 30px;
                 }
             }
         }

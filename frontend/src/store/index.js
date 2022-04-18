@@ -9,6 +9,7 @@ export default createStore({
     commentPostId: null,
     commentsCount: null,
     currentUserId: null,
+    postMessage: ""
   },
   getters: {
   },

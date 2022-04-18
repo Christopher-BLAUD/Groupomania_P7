@@ -5,7 +5,7 @@ const app = express();
 const userRoutes = require('./routes/user');
 const postRoutes = require('./routes/post');
 const commentRoutes = require('./routes/comment');
-const likeRoutes = require('./routes/like')
+/* const likeRoutes = require('./routes/like') */
 
 // Sequelize
 const sequelize = require('./utils/database');
@@ -14,7 +14,7 @@ const sequelize = require('./utils/database');
 const User = require('./models/user');
 const Post = require('./models/post');
 const Comment = require('./models/comment');
-const Like = require('./models/like')
+/* const Like = require('./models/like') */
 
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -41,6 +41,7 @@ User.hasMany(Post);
 Post.belongsTo(User, {
   onDelete: 'CASCADE'
 });
+Post.hasMany(Comment);
 Comment.belongsTo(User, {
   onDelete: 'CASCADE'
 });
@@ -48,22 +49,14 @@ Comment.belongsTo(Post, {
   onDelete: 'CASCADE'
 });
 
-Like.belongsTo(User, {
+/* Like.belongsTo(User, {
   onDelete: 'CASCADE'
 });
 
 Like.belongsTo(Post, {
   onDelete: 'CASCADE'
 });
-
-/* sequelize
-  .sync()
-  .then((result) => {
-    console.log(result);
-  })
-  .catch((error) => {
-    console.log(error);
-  })  */
+Post.hasMany(Like); */
 
 app.use('/api/user/images', express.static(path.join(__dirname, 'images')));
 app.use('/api/post/images', express.static(path.join(__dirname, 'images')));
@@ -71,7 +64,7 @@ app.use(express.static('images'));
 
 app.use('/api/user', userRoutes);
 app.use('/api/post', postRoutes);
-app.use('/api/like', likeRoutes)
+/* app.use('/api/like', likeRoutes) */
 app.use('/api/comment', commentRoutes)
 
 

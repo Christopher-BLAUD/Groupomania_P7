@@ -10,7 +10,11 @@ exports.getPost = (req, res, next) => {
             {
                 model: User,
                 require: true
-            }
+            }/* ,
+            {
+                model: Like, 
+                require: true
+            } */
     ],
         order: [['createdAt', 'DESC']]
     })
@@ -19,39 +23,44 @@ exports.getPost = (req, res, next) => {
     
 }
 
-/* exports.getPostLike = (req, res, next) => {
-    Post.findAll({
-        include: [
-            {
-                model: Like,
-                require: true
-            }
-    ]
-    })
-    .then(postLikes => res.status(200).json(postLikes))
-    .catch((error) => res.status(500).json(error))
-} */
-
 exports.createPost = (req, res, next) => {
-sequelize.sync()
-    .then(newPost => {
-        return Post.create({
-            content: req.body.content,
-            image: `${req.protocol}://${req.get('host')}/api/post/images/${req.file.filename}`,
-            userId: req.params.id    
+    if(req.file){
+        Post.create({
+                content: req.body.content,
+                image: `${req.protocol}://${req.get('host')}/api/post/images/${req.file.filename}`,
+                userId: req.params.id    
         })
-    })
     .then(post => res.status(201).json({message: 'Publication avec photo envoyée avec succés', post}))
     .catch(error => {res.status(500).json(error)})
+    }
+    else {
+        Post.create({
+            content: req.body.content,
+            userId: req.params.id    
+    })
+.then(post => res.status(201).json({message: 'Message publié avec succés', post}))
+.catch(error => {res.status(500).json(error)})
+    }
 }
 
 exports.deletePost = (req, res, next) => {
-    Post.destroy({
-        where: {
-            id: req.params.id,
-            userId: req.body.userId
-        }
-    })
-    .then(() => res.status(200).json({message: 'Le post a été supprimé !'}))
-    .catch(error => res.status(500).json(error))
+    if(req.body.isAdmin) {
+        Post.destroy({
+            where: {
+                id: req.params.id,
+            }
+        })
+        .then(() => res.status(200).json({message: 'Le post a été supprimé !'}))
+        .catch(error => res.status(500).json(error))
+    }
+    else {
+        Post.destroy({
+            where: {
+                id: req.params.id,
+                userId: req.body.userId
+            }
+        })
+        .then(() => res.status(200).json({message: 'Le post a été supprimé !'}))
+        .catch(error => res.status(500).json(error))
+    }
 }

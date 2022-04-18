@@ -28,14 +28,25 @@ exports.createComment = (req, res, next) => {
 };
 
 exports.deleteComment = (req, res, next) => {
-    Comment.destroy({
-        where: {
-            id: req.params.id,
-            userId: req.body.userId
-        }
-    })
-    .then(() => res.status(200).json({message: "Commentaire supprimé"}))
-    .catch(error => res.status(500).json(error))
+    if(req.body.isAdmin){
+        Comment.destroy({
+            where: {
+                id: req.params.id
+            }
+        })
+        .then(() => res.status(200).json({message: "Commentaire supprimé"}))
+        .catch(error => res.status(500).json(error)) 
+    }
+    else {
+        Comment.destroy({
+            where: {
+                id: req.params.id,
+                userId: req.body.userId
+            }
+        })
+        .then(() => res.status(200).json({message: "Commentaire supprimé"}))
+        .catch(error => res.status(500).json(error))
+    }
 }
 
 exports.commentsCount = (req, res, next) => {

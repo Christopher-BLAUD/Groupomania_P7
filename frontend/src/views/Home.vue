@@ -23,8 +23,8 @@
 <!-- Main Page -->
             <section>
                 <div class="user-msg">
-                    <input v-model="message" type="text" name="message" id="" placeholder="Quoi de neuf aujourd'hui ?">
-                    <button type="submit" @click="showModalPost"><i class="fas fa-link"></i> Poster !</button>
+                    <input v-model="$store.state.postMessage" type="text" name="message" id="" placeholder="Quoi de neuf aujourd'hui ?">
+                    <button type="submit" @click="showModalPost"><i class="fas fa-link"></i> Poster</button>
                 </div>
                 <PostModal v-if="$store.state.modalPost" />
 <!-- Post -->
@@ -43,26 +43,27 @@
                                 </div>
                             </div>
                         </div>
-                        <div v-if="post.userId == userId" @click="deletePost(post.id)" class="user-post_header_delete">
+                        <div v-if="post.userId == userId || userInfo.isAdmin" @click="deletePost(post.id)" class="user-post_header_delete">
                             <i class="far fa-trash-alt"></i>
                         </div>                        
                     </div>
                     <div class="user-post_body">
-                        <div class="user-post_body_pic">
+                        <div class="user-post_body_legend">
+                            <p>{{ post.content }}</p>
+                        </div>
+                        <div v-if="post.image !== null" class="user-post_body_pic">
                             <img :src="post.image" alt="Image du post">
+                        </div>
                             <div class="user-post_body_pic_action">
-                                <!-- <div @click="likePost(post.id)" class="user-post_body_pic_action_like">
-                                    <i class="far fa-heart" id="like-btn"></i>
+                                <!-- <div class="user-post_body_pic_action_like">
+                                    <i @click="likePost(post.id, post)" class="fas fa-thumbs-up"></i>
+                                    <i class="fas fa-thumbs-down" id="like-btn"></i>
                                 </div> -->
                                 <div @click="getComments(post.id)" class="user-post_body_pic_action_comment">
                                     <i class="far fa-comment" id="new-comment"></i>
                                     <span id="comment">Voir les commentaires</span>
                                 </div>
                             </div>
-                        </div>
-                        <div class="user-post_body_legend">
-                            <p>{{ post.content }}</p>
-                        </div>
                     </div>
                 </div>
             </section>
@@ -94,7 +95,7 @@ export default {
         axios.get('http://localhost:3000/api/user/' + id)
             .then(response => {
                 this.userInfo = response.data;
-                this.$store.state.isUserConnected = true
+                this.$store.state.isUserConnected = true;
                                
             })
             .catch(error => {
@@ -129,7 +130,8 @@ export default {
             if(confirm('Êtes-vous sûr(e) de vouloir supprimer ce post ?'))
             axios.delete('http://localhost:3000/api/post/delete/' + id, {
                 data: {
-                    userId: localStorage.getItem('id')
+                    userId: localStorage.getItem('id'),
+                    isAdmin: this.userInfo.isAdmin
                 },
                 headers: {
                     "Authorization": "Bearer " + token 
@@ -142,11 +144,20 @@ export default {
                     })
                 .catch((error) => console.log(error))
         },
-        /* likePost(id) {
-            const userId = localStorage.getItem('id');
-            axios.post('http://localhost:3000/api/like/' + id, {userId})
-            .then(res => console.log(res))
-            .catch(error => console.log(error))
+        /* likePost(postId, post) {
+            console.log(post.likes[0])
+            const userId = parseInt(localStorage.getItem('id'), 10)
+            const hasLiked = true;
+            if(!post.likes.userId && post.likes[0].userId !== userId){                           
+                axios.post('http://localhost:3000/api/like/post/' + postId + '/user/' + userId, {hasLiked} )
+                    .then(res => console.log(res))
+                    .catch(error => console.log(error))  
+            }
+            else {
+                axios.delete('http://localhost:3000/api/like/post/' + postId + '/user/' + userId)
+                    .then(res => console.log("Le like a bien été supprimé !", res))
+                    .catch(error => console.log(error))   
+            }
         } */
     }
 }
@@ -290,6 +301,9 @@ section{
     justify-content: center;
     align-items: center;
     margin: 50px 0;
+    @include mobile{
+        margin: 0;
+    }
 }
 .user-msg{
         width: 700px;
@@ -306,9 +320,12 @@ section{
             position: absolute;
             top: 25%;
             right: 20px;
+            @include mobile{
+                width: 85px;
+            }
         }
         @include mobile{
-            width: 350px;
+            width: 300px;
             margin: 20px 0;
             border-radius: 15px;
             margin-left: 0;
@@ -331,6 +348,7 @@ section{
                 width: calc(100% - 115px);
                 padding-left: 15px;
                 padding-right: 100px;
+                font-size: 12px;
             }
             &::placeholder{
                 color: rgba(255, 255, 255, 0.514);
@@ -345,13 +363,14 @@ section{
     width: 840px;
     background-color: #202020;
     border-radius: 20px;
+    overflow: hidden;
     margin: 30px 0;
     box-shadow: 11px 9px 21px #030202;
-    padding: 0 15px;
     margin-left: 60px;
     @include mobile{
         width: calc(100% - 60px);
         margin-left: 0;
+        margin: 60px 0;
     }
     @include touch-pad{
         width: 80%;
@@ -362,6 +381,10 @@ section{
         align-items: center;
         justify-content: space-between;
         margin-bottom: 15px;
+        padding: 0 15px;
+        @include mobile{
+            padding-left: 0;
+        }
         &_user-info{
             display: flex;
             justify-content: center;
@@ -393,6 +416,9 @@ section{
                 display: flex;
                 font-weight: bold;
                 color: $primary-color;
+                @include mobile{
+                    text-align: start;
+                }
             }
             &_date{
                 display: flex;
@@ -404,6 +430,16 @@ section{
     }
     &_body{
         position: relative;
+        &_legend{
+            display: flex;
+            justify-content: center;
+            font-size: 18px;
+            margin: 15px 0;
+            padding: 0 13px;
+            @include mobile{
+                font-size: 16px;
+            }
+        }
         &_pic{
             overflow: hidden;
             margin: 0 15px;
@@ -421,13 +457,14 @@ section{
             &_action{
                 display: flex;
                 align-items: center;
+                justify-content: space-between;
                 padding: 0 10px;
-                position: absolute;
-                bottom: -1px;
                 background-color: #00000066;
                 backdrop-filter: blur(80px);
-                width: calc(100% - 10px);
                 height: 50px;
+                @include mobile{
+                    justify-content: center;
+                }
                 & i{
                     text-decoration: none;
                     color: $primary-color;
@@ -444,15 +481,11 @@ section{
                     align-items: center;
                     color: $primary-color;
                 }
+                &_like{
+                    display: flex;
+                }
             }
         }
-        }
-        &_legend{
-            color: $primary-color;
-            font-size: 18px;
-            @include mobile{
-                font-size: 16px;
-            }
         }
     }
 

@@ -16,7 +16,7 @@ exports.getUser = (req, res, next) => {
 
 
 // Inscrisption de l'utilisateur 
-exports.signUp = (req, res, next) => {
+/* exports.signUp = (req, res, next) => {
 sequelize.sync()
     bcrypt.hash(req.body.password, 10)
     .then(hash => {
@@ -26,7 +26,6 @@ sequelize.sync()
             email: req.body.email,
             password: hash
         })
-        console.log(result);
     })
     .then(user => {
         res.status(201).json({message: "Utilisateur créé avec succès !", user})
@@ -34,7 +33,36 @@ sequelize.sync()
     .catch((err) => {
         console.log(err);
     });
+} */
+exports.signUp = (req, res, next) => {
+    User.findOne({
+        where: {
+            email: req.body.email
+        }
+    })
+    .then(user => {
+        if(!user) {
+            bcrypt.hash(req.body.password, 10)
+                .then(hash => {
+                    return User.create({
+                            lastname: req.body.lastname,
+                            firstname: req.body.firstname,
+                            email: req.body.email,
+                            isAdmin: true,
+                            password: hash
+                        })
+                }) 
+            .then(userCreated => res.status(201).json({message: "Utilisateur créé avec succès !", userCreated}))
+            .catch(error => res.status(500).json({error}))
+        }
+        else {
+            res.status(409).json({error: "Cette utilisateur existe déja !"})
+        }
+
+    })
+    .catch(error => res.status(500).json({error}))
 }
+
 
 
 

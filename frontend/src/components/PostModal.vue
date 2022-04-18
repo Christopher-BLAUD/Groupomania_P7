@@ -5,7 +5,7 @@
                             <i class="fas fa-times" @click="showModalPost()"></i>
                             <h2>Créer une publication</h2>
                             <span>Votre message</span>
-                                <textarea @change="showMessage()" v-model="message" name="" id="" cols="60" rows="10"></textarea>
+                                <textarea @change="showMessage()" v-model="$store.state.postMessage" name="" id="" cols="60" rows="10"></textarea>
                                 <span>Joindre une image</span>
                                 <div class="post-modal_edit_join">
                                     <button class="post-modal_edit_join_btn" @click.prevent="getPostFile()">Parcourir</button>
@@ -28,8 +28,7 @@ export default {
     },
     data() {
         return {
-            postAttachment: null,
-            message: ""
+            postAttachment: null
         }
     },
     methods: {
@@ -58,18 +57,18 @@ export default {
 
             const formDataPost = new FormData();
             formDataPost.append('image', this.postAttachment);
-            formDataPost.append('content', this.message);
-            if(this.postAttachment !== null){
+            formDataPost.append('content', this.$store.state.postMessage);
+            /* if(this.postAttachment !== null){ */
                 axios.post('http://localhost:3000/api/post/create/' + userId, formDataPost, config)
                     .then((res) => {
                         console.log(res);
                         location.reload();
                     })
                     .catch((error) => console.log(error))
-            }
+            /* }
             else {
                 alert(`Votre post nécessite d'y ajouter une image !`)
-            }
+            } */
         }
     }
 }

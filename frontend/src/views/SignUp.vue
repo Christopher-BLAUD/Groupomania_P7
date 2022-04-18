@@ -16,7 +16,8 @@
         <i class="fas fa-eye" @click="showPassword()" id="eye"></i>
         <span class="pass-msg-err">Votre mot de passe doit commencer par une majuscule et contenir <strong>au moins 8 caractères</strong> <br> ( dont au moins <strong>2 chiffres</strong> )</span>
       </div>
-        <BaseButton value="S'inscrire" @click.prevent="createUser()"/>      
+        <BaseButton value="S'inscrire" @click.prevent="createUser()"/>   
+        <span class="user-msg-err">Adresse email déja liée à un compte utilisateur</span>   
     </form>
     </div>
   </div>
@@ -97,6 +98,7 @@ export default {
         } 
       },
       createUser() {
+        const existingUser = document.querySelector('.user-msg-err')
         if(nameRegex.test(this.lastName) && nameRegex.test(this.firstName) && passwordRegex.test(this.password) && this.lastName !== '' && this.firstName !== '' && this.email !== '' && this.password !== ''){
         axios.post('http://localhost:3000/api/user/signup', {
           lastname: this.lastName,
@@ -108,7 +110,10 @@ export default {
         console.log(response)
         this.$router.push({path: '/login'});
         })
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.log(err)
+        existingUser.classList.add('reveal')
+        });
       }
       else{
         alert('Merci de compléter tous les champs du formulaire')
@@ -137,7 +142,15 @@ export default {
   }
 
 }
-
+.user-msg-err{
+          visibility: hidden;
+          background: none!important;
+          color: #FF0000!important;
+          font-weight: bold;
+          & i{
+            font-size: 20px;
+          }
+      }
 .sign-up{
   display: flex;
   justify-content: center;
@@ -194,7 +207,6 @@ export default {
         color: #ffff;
         width: 250px;
         padding: 5px;
-        position: absolute;
         &.pseudo-err-msg{
           visibility: hidden;
           top: 288px;
@@ -254,7 +266,6 @@ export default {
       @include left-arrow(9px);
     }
 }
-
 .show-img{
   width: 150px;
   height: 150px;
