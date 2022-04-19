@@ -1,7 +1,7 @@
 <template>
-    <div class="header-logo">
+    <header class="header-logo">
         <img src="../assets/icon-left-font-monochrome-white.svg" alt="logo groupomania">
-    </div>
+    </header>
 </template>
 
 <script>

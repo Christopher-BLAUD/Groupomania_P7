@@ -2,7 +2,9 @@
     <aside class="post-modal">
                     <form id="post-form" enctype="multipart/form-data">
                         <div class="post-modal_edit">
-                            <i class="fas fa-times" @click="showModalPost()"></i>
+                            <a href="#" @click.prevent="showModalPost()">
+                                <i class="fas fa-times"></i>
+                            </a>
                             <h2>Créer une publication</h2>
                             <span>Votre message</span>
                                 <textarea @change="showMessage()" v-model="$store.state.postMessage" name="" id="" cols="60" rows="10"></textarea>
@@ -58,17 +60,17 @@ export default {
             const formDataPost = new FormData();
             formDataPost.append('image', this.postAttachment);
             formDataPost.append('content', this.$store.state.postMessage);
-            /* if(this.postAttachment !== null){ */
+            if(formDataPost.get('content') == "") {
+                alert('Attention, votre message est vide !');
+            }
+            else {
                 axios.post('http://localhost:3000/api/post/create/' + userId, formDataPost, config)
                     .then((res) => {
                         console.log(res);
                         location.reload();
                     })
                     .catch((error) => console.log(error))
-            /* }
-            else {
-                alert(`Votre post nécessite d'y ajouter une image !`)
-            } */
+            }
         }
     }
 }

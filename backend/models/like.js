@@ -1,4 +1,4 @@
-/* const Sequelize = require('sequelize');
+const Sequelize = require('sequelize');
 const sequelize = require('../utils/database');
 
 const Like = sequelize.define('like', {
@@ -26,4 +26,4 @@ const Like = sequelize.define('like', {
 
 
 
-module.exports = Like; */
+module.exports = Like;

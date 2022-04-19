@@ -1,7 +1,8 @@
 const sequelize = require('../utils/database');
 const Post = require('../models/post');
 const User = require('../models/user');
-const Like = require('../models/like')
+const Like = require('../models/like');
+const Comment = require('../models/comment');
 
 
 exports.getPost = (req, res, next) => {
@@ -10,11 +11,15 @@ exports.getPost = (req, res, next) => {
             {
                 model: User,
                 require: true
-            }/* ,
+            },
             {
-                model: Like, 
+                model: Comment, 
                 require: true
-            } */
+            },
+            {
+                model: Like,
+                require: true
+            }
     ],
         order: [['createdAt', 'DESC']]
     })

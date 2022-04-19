@@ -1,24 +1,24 @@
 <template>
     <main>
         <div class="home-page">
-            <div class="user-banner">
+            <section class="user-banner">
                 <div class="user-banner_body">
-                    <div class="user-banner_body_img-profil">
-                        <img :src="userInfo.imageUrl" alt="photo de profil utilisateur">
+                    <div v-if="userInfo.imageUrl" class="user-banner_body_img-profil">
+                        <img  :src="userInfo.imageUrl" alt="photo de profil utilisateur">
                     </div>
                     <div class="user-banner_body_name">
                         <span>{{ userInfo.firstname }} {{ userInfo.lastname }} </span>
                     </div>
                     <div class="user-banner_body_action">
-                        <div class="user-banner_body_action_edit-profil" @click="showModalProfil">
+                        <a href="#" tabindex="0" class="user-banner_body_action_edit-profil" @click.prevent="showModalProfil">
                             <i class="fas fa-user-cog"></i>
-                        </div>
-                        <div class="user-banner_body_action_disconnet" @click="disconnect">
+                        </a>
+                        <a href="#" class="user-banner_body_action_disconnet" @click.prevent="disconnect">
                             <i class="fas fa-power-off"></i>
-                        </div>
+                        </a>
                     </div>
                 </div>                
-            </div>
+            </section>
             <ProfilModal v-if="$store.state.modalProfil" />
 <!-- Main Page -->
             <section>
@@ -28,7 +28,7 @@
                 </div>
                 <PostModal v-if="$store.state.modalPost" />
 <!-- Post -->
-                <div v-for="post in userPost" :key="post.id" class="user-post">
+                <div v-for="(post) in userPost" :key="post.id" class="user-post">
                     <div class="user-post_header">
                         <div class="user-post_header_user-info">
                             <div class="user-post_header_pic">
@@ -43,9 +43,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div v-if="post.userId == userId || userInfo.isAdmin" @click="deletePost(post.id)" class="user-post_header_delete">
+                        <a href="#" v-if="post.userId == userId || userInfo.isAdmin" @click.prevent="deletePost(post.id)" class="user-post_header_delete">
                             <i class="far fa-trash-alt"></i>
-                        </div>                        
+                        </a>                        
                     </div>
                     <div class="user-post_body">
                         <div class="user-post_body_legend">
@@ -55,14 +55,14 @@
                             <img :src="post.image" alt="Image du post">
                         </div>
                             <div class="user-post_body_pic_action">
-                                <!-- <div class="user-post_body_pic_action_like">
-                                    <i @click="likePost(post.id, post)" class="fas fa-thumbs-up"></i>
-                                    <i class="fas fa-thumbs-down" id="like-btn"></i>
-                                </div> -->
-                                <div @click="getComments(post.id)" class="user-post_body_pic_action_comment">
-                                    <i class="far fa-comment" id="new-comment"></i>
-                                    <span id="comment">Voir les commentaires</span>
+                                <div class="user-post_body_pic_action_like">
+                                    <i @click="likePost(post.id)" class="fas fa-thumbs-up"></i>
                                 </div>
+                                <a href="#" @click.prevent="getComments(post.id)" class="user-post_body_pic_action_comment">
+                                    <i v-if="post.comments.find(comment => comment.userId == userId)" class="fas fa-comment"></i>
+                                    <i v-else class="far fa-comment"></i>
+                                    <span v-if="post.comments.length >= 1" id="comment">{{ post.comments.length }}</span>
+                                </a>
                             </div>
                     </div>
                 </div>
@@ -144,11 +144,10 @@ export default {
                     })
                 .catch((error) => console.log(error))
         },
-        /* likePost(postId, post) {
-            console.log(post.likes[0])
+        likePost(postId) {
             const userId = parseInt(localStorage.getItem('id'), 10)
             const hasLiked = true;
-            if(!post.likes.userId && post.likes[0].userId !== userId){                           
+            if(this.userPost.likes.find(like => like.userId !== userId)){                           
                 axios.post('http://localhost:3000/api/like/post/' + postId + '/user/' + userId, {hasLiked} )
                     .then(res => console.log(res))
                     .catch(error => console.log(error))  
@@ -158,7 +157,7 @@ export default {
                     .then(res => console.log("Le like a bien été supprimé !", res))
                     .catch(error => console.log(error))   
             }
-        } */
+        }
     }
 }
 
@@ -167,6 +166,11 @@ export default {
 <style scoped lang="scss">
 @import "../sass/utils/variables";
 @import "../sass/utils/mixins";
+a{
+    color: #fff;
+    text-decoration: none;
+}
+
 main{
     display: flex;
     justify-content: center;
@@ -206,6 +210,7 @@ main{
     }
     @include touch-pad{
         width: 530px;
+        margin: 0!important;
     }
     &_body{
         display: flex;
@@ -253,9 +258,7 @@ main{
                 height: 150px;
             }
                 & img{
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
+                    @include img-size;
                 }
             }
         &_action{
@@ -306,6 +309,9 @@ section{
     }
 }
 .user-msg{
+        display: flex;
+        justify-content: center;
+        align-items: center;
         width: 700px;
         position: relative;
         margin: 50px 0;
@@ -314,7 +320,6 @@ section{
         border-radius: 25px;
         box-shadow: 11px 9px 21px #030202;
         overflow: hidden;
-        position: relative;
         & button{
             @include button;
             position: absolute;
@@ -333,6 +338,7 @@ section{
         @include touch-pad{
             width: 650px;
             margin: 30px 0;
+            margin-bottom: 60px;
         }
         & input{
             width: calc(100% - 180px);
@@ -403,9 +409,7 @@ section{
             overflow: hidden;
             margin: 15px;
             & img{
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
+                @include img-size;
             }
         }
         &_info{
@@ -433,7 +437,8 @@ section{
         &_legend{
             display: flex;
             justify-content: center;
-            font-size: 18px;
+            font-size: 20px;
+            font-weight: lighter;
             margin: 15px 0;
             padding: 0 13px;
             @include mobile{
@@ -442,7 +447,7 @@ section{
         }
         &_pic{
             overflow: hidden;
-            margin: 0 15px;
+            margin: 30px;
             height: 568px;
             border-radius: 15px;
             position: relative;
@@ -462,19 +467,18 @@ section{
                 background-color: #00000066;
                 backdrop-filter: blur(80px);
                 height: 50px;
-                @include mobile{
-                    justify-content: center;
-                }
                 & i{
                     text-decoration: none;
-                    color: $primary-color;
+                    color: #20ff03;
                     font-size: 1.2em;
                     margin: 0 10px;
                     cursor: pointer;
                 }
                 & span{
                     font-size: 14px;
+                    font-weight: bold;
                     margin-right: 15px;
+                    color: #fff;
                 }
                 &_comment{
                     display: flex;

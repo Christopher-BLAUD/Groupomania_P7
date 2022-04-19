@@ -15,9 +15,9 @@
             </div>
             <div v-else v-for="comment in comments" :key="comment.id" class="comments_body_message">
                 <div class="comments_body_message_header">
-                    <div v-if="comment.userId == userId || userInfo.isAdmin" @click="deleteComment(comment.id)" class="comments_body_message_delete">
+                    <a href="#" v-if="comment.userId == userId || userInfo.isAdmin" @click.prevent="deleteComment(comment.id)" class="comments_body_message_delete">
                         <i class="far fa-trash-alt"></i>
-                    </div>
+                    </a>
                     <div class="comments_body_message_user-pic">
                         <img :src="comment.user.imageUrl" alt="photo du créateur du commentaire">
                     </div>
@@ -28,7 +28,7 @@
             </div>
         </div>
         <div class="comments_add">
-            <input v-model="comment" type="text" name="comment" placeholder="Ajoutez un commentaire ...">
+            <input class="comments_add_input" v-model="comment" type="text" name="comment" placeholder="Ajoutez un commentaire ...">
             <button type="submit" @click="sendComment()">Publier</button>
         </div>
     </div>
@@ -54,14 +54,12 @@ export default {
             .then(res => {
                 this.comments = res.data;
                 this.hasComments = true
-                console.log(this.comments)
             })
             .catch(error => console.log(error));
         let id = localStorage.getItem('id')
         axios.get('http://localhost:3000/api/user/' + id)
             .then(response => {
                 this.userInfo = response.data;
-                console.log(this.userInfo.isAdmin)
                                
             })
             .catch(error => {
@@ -91,17 +89,22 @@ export default {
             const postId = localStorage.getItem('postId');
             const token = localStorage.getItem('token');
             let comment = this.comment;
-            axios.post('http://localhost:3000/api/comment/create', {userId, postId, comment}, {
-                headers: {
-                    "Authorization": "Bearer " + token 
-                }
-            })
-                .then(res => {
-                    console.log(res);
-                    location.reload();
-
-                    })
-                .catch(error => console.log(error))
+            if(comment == "") {
+                alert(`Attention votre commentaire est vide `)
+            }
+            else {
+                axios.post('http://localhost:3000/api/comment/create', {userId, postId, comment}, {
+                    headers: {
+                        "Authorization": "Bearer " + token 
+                    }
+                })
+                    .then(res => {
+                        console.log(res);
+                        location.reload();
+    
+                        })
+                    .catch(error => console.log(error))
+            }
         }
     }
 }
@@ -111,6 +114,9 @@ export default {
 @import "../sass/utils/variables";
 @import "../sass/utils/mixins";
 
+a{
+    color: #fff ;
+}
 .comments{
     display: flex;
     flex-direction: column;
@@ -190,6 +196,8 @@ export default {
                 font-weight: lighter;
                 @include mobile{
                     font-size: 14px;
+                    width: 240px;
+                    text-align: start;
                 }
 
             }
@@ -254,4 +262,5 @@ export default {
             }
         }
 }
+
 </style>

@@ -3,7 +3,9 @@
                 <div class="profil-modal_edit">
                     <div class="profil-modal_edit_title">
                         <h2>Modifier le profil</h2>
-                        <i class="fas fa-times" @click="showModalProfil"></i>
+                        <a href="#" @click.prevent="showModalProfil">
+                            <i class="fas fa-times" ></i>
+                        </a>                                
                     </div>
                     <form id="form" enctype="multipart/form-data">
                         <div class="profil-modal_edit_pic">

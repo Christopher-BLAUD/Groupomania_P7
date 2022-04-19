@@ -1,4 +1,4 @@
-/* const sequelize = require('../utils/database');
+const sequelize = require('../utils/database');
 const Like = require('../models/like')
 
 
@@ -22,4 +22,4 @@ exports.sendUnlike = (req, res, next) => {
     })
     .then(like => res.status(200).json({message: 'Like supprimé avec succés', like}))
     .catch(error => res.status(500).json(error))
-} */
+}

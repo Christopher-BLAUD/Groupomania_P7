@@ -1,14 +1,14 @@
 <template>
-<footer>
-    <div class="footer">
-    <ul class="footer_list">
-      <li>A propos</li>
-      <li>Politique de Confidentialité</li>
-      <li>Politique relative aux cookies</li>
-    </ul>
-    <span class="footer_copyright"><i class="fa-solid fa-copyright"></i> 2022 Groupomania, Inc</span>
-  </div>
-</footer>
+  <footer>
+      <div class="footer">
+      <ul class="footer_list">
+        <li>A propos</li>
+        <li>Politique de Confidentialité</li>
+        <li>Politique relative aux cookies</li>
+      </ul>
+      <span class="footer_copyright"><i class="fa-solid fa-copyright"></i> 2022 Groupomania, Inc</span>
+    </div>
+  </footer>
 </template>
 
 <script>
@@ -42,14 +42,15 @@ export default {
     padding: 0;
     @include mobile{
       padding: 0 15px;
-      flex-direction: column;
+      flex-wrap: wrap;
+      justify-content: center;
       text-align: start;
     }
     & li{
       margin: 0 15px;
       list-style: none;
       @include mobile{
-        margin: 10px 0;
+        margin: 10px;
       }
     }
   }

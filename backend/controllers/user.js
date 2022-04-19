@@ -48,7 +48,7 @@ exports.signUp = (req, res, next) => {
                             lastname: req.body.lastname,
                             firstname: req.body.firstname,
                             email: req.body.email,
-                            isAdmin: true,
+                            isAdmin: false,
                             password: hash
                         })
                 }) 
