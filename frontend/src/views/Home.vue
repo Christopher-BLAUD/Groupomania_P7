@@ -28,7 +28,7 @@
                 </div>
                 <PostModal v-if="$store.state.modalPost" />
 <!-- Post -->
-                <div v-for="(post) in userPost" :key="post.id" class="user-post">
+                <div v-for="post in userPost" :key="post.id" class="user-post">
                     <div class="user-post_header">
                         <div class="user-post_header_user-info">
                             <div class="user-post_header_pic">
@@ -56,12 +56,14 @@
                         </div>
                             <div class="user-post_body_pic_action">
                                 <div class="user-post_body_pic_action_like">
-                                    <i @click="likePost(post.id)" class="fas fa-thumbs-up"></i>
+                                    <i v-if="post.comments.find(comment => comment.userId == userId)" @click="likePost(post.id)" class="far fa-heart"></i>
+                                    <i v-else @click="likePost(post.id)" class="fas fa-heart"></i>
+                                    <span v-if="post.likesCount >= 1" id="comment">{{ post.likesCount }}</span>
                                 </div>
                                 <a href="#" @click.prevent="getComments(post.id)" class="user-post_body_pic_action_comment">
                                     <i v-if="post.comments.find(comment => comment.userId == userId)" class="fas fa-comment"></i>
                                     <i v-else class="far fa-comment"></i>
-                                    <span v-if="post.comments.length >= 1" id="comment">{{ post.comments.length }}</span>
+                                    <span v-if="post.commentsCount >= 1" id="comment">{{ post.commentsCount }}</span>
                                 </a>
                             </div>
                     </div>
@@ -145,9 +147,12 @@ export default {
                 .catch((error) => console.log(error))
         },
         likePost(postId) {
-            const userId = parseInt(localStorage.getItem('id'), 10)
+            axios.get('http://localhost:3000/api/like/post/' + postId)
+                .then(res => console.log(res))
+                .catch(error => console.log(error))
+            /* const userId = parseInt(localStorage.getItem('id'), 10)
             const hasLiked = true;
-            if(this.userPost.likes.find(like => like.userId !== userId)){                           
+                if(this.userPost.userId !== userId){                           
                 axios.post('http://localhost:3000/api/like/post/' + postId + '/user/' + userId, {hasLiked} )
                     .then(res => console.log(res))
                     .catch(error => console.log(error))  
@@ -156,7 +161,7 @@ export default {
                 axios.delete('http://localhost:3000/api/like/post/' + postId + '/user/' + userId)
                     .then(res => console.log("Le like a bien été supprimé !", res))
                     .catch(error => console.log(error))   
-            }
+            }     */        
         }
     }
 }
@@ -462,7 +467,7 @@ section{
             &_action{
                 display: flex;
                 align-items: center;
-                justify-content: space-between;
+                justify-content: flex-start;
                 padding: 0 10px;
                 background-color: #00000066;
                 backdrop-filter: blur(80px);
@@ -487,6 +492,9 @@ section{
                 }
                 &_like{
                     display: flex;
+                    & i{
+                        color:rgb(255, 0, 0)
+                    }
                 }
             }
         }

@@ -48,13 +48,3 @@ exports.deleteComment = (req, res, next) => {
         .catch(error => res.status(500).json(error))
     }
 }
-
-exports.commentsCount = (req, res, next) => {
-    Comment.count({
-        where: {
-            postId: req.params.id
-        }
-    })
-        .then(comment => res.status(200).json(comment))
-        .catch(error => res.status(500).json(error))
-}

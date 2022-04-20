@@ -2,7 +2,7 @@
     <div class="comments">
         <div class="comments_title">
             <div class="comments_title_come-back">
-                <router-link to="/home">
+                <router-link @click="clearStorage" to="/home">
                     <i class="fas fa-arrow-alt-circle-left"></i>
                     <span>Retour au fil d'actualité</span>
                 </router-link>
@@ -105,6 +105,9 @@ export default {
                         })
                     .catch(error => console.log(error))
             }
+        },
+        clearStorage() {
+            localStorage.removeItem('postId');
         }
     }
 }

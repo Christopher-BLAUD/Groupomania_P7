@@ -4,29 +4,36 @@ const User = require('../models/user');
 const Like = require('../models/like');
 const Comment = require('../models/comment');
 
-
 exports.getPost = (req, res, next) => {
     Post.findAll({
+        attributes: {
+            include: [
+                [sequelize.fn('COUNT', sequelize.col('comments.id')), 'commentsCount'],
+                [sequelize.fn('COUNT', sequelize.col('likes.id')), 'likesCount']
+            ]
+        }
+        ,
         include: [
             {
-                model: User,
-                require: true
-            },
-            {
-                model: Comment, 
-                require: true
+                model: Comment,
+                attributes: ['userId']
             },
             {
                 model: Like,
-                require: true
+                attributes: ['userId']
+            },
+            {
+                model: User,
+                attributes: ['firstname', 'lastname', 'imageUrl']
             }
-    ],
-        order: [['createdAt', 'DESC']]
+        ],
+        order: [['createdAt', 'DESC']],
+        group: ['post.id']
     })
     .then(posts => res.status(200).json(posts))
-    .catch((error) => res.status(500).json(error))
-    
+    .catch(error => console.log(error))
 }
+
 
 exports.createPost = (req, res, next) => {
     if(req.file){
