@@ -34,29 +34,43 @@ app.use((req, res, next) => {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true}));
 
+/* sequelize.sync({force: true}) */
+/* sequelize.sync({alter: true}) */
 
 // Définition des relations
 
 User.hasMany(Post);
+
 Post.belongsTo(User, {
   onDelete: 'CASCADE'
 });
+
 Post.hasMany(Comment);
-Comment.belongsTo(User, {
+
+Comment.belongsTo(User,
+{
   onDelete: 'CASCADE'
-});
+}
+);
+
 Comment.belongsTo(Post, {
   onDelete: 'CASCADE'
 });
 
-Like.belongsTo(User, {
+Like.belongsTo(User, 
+{
   onDelete: 'CASCADE'
-});
+}
+);
+
+Post.hasMany(Like);
 
 Like.belongsTo(Post, {
   onDelete: 'CASCADE'
 });
-Post.hasMany(Like);
+
+
+
 
 app.use('/api/user/images', express.static(path.join(__dirname, 'images')));
 app.use('/api/post/images', express.static(path.join(__dirname, 'images')));

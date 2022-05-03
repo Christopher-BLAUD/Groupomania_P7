@@ -8,7 +8,7 @@ exports.sendLike = (req, res, next) => {
         userId: parseInt(req.params.userId, 10),
         postId: parseInt(req.params.postId, 10)
     })
-    .then(like => res.status(201).json({message: 'Le post a été liké !', like}))
+    .then(like => res.status(201).json({message: 'Le post a été liké !'}))
     .catch(error => res.status(500).json(error)) 
 }
 
@@ -19,7 +19,7 @@ exports.sendUnlike = (req, res, next) => {
             postId: req.params.postId
         }
     })
-    .then(like => res.status(200).json({message: 'Like supprimé avec succés', like}))
+    .then(like => res.status(200).json({message: 'Like supprimé avec succés'}))
     .catch(error => res.status(500).json(error))
 }
 
@@ -31,4 +31,15 @@ exports.getLikes = (req, res, next) => {
     })
         .then(like => res.status(200).json(like))
         .catch(error => res.status(500).json({error}))
+}
+
+exports.getOneLike = (req, res, next) => {
+    Like.findOne({
+        where: {
+            userId: req.params.userId,
+            postId: req.params.postId
+        }
+    })
+    .then(like => res.status(200).json(like))
+    .catch(error => res.status(404).json(error))
 }

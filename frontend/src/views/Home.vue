@@ -28,15 +28,15 @@
                 </div>
                 <PostModal v-if="$store.state.modalPost" />
 <!-- Post -->
-                <div v-for="post in userPost" :key="post.id" class="user-post">
+                <div v-for="post in postInfo" :key="post.id" class="user-post">
                     <div class="user-post_header">
                         <div class="user-post_header_user-info">
                             <div class="user-post_header_pic">
-                                <img :src="post.user.imageUrl" alt="Photo de profil du créateur du post">
+                                <img :src="post.userAvatar" alt="Photo de profil du créateur du post">
                             </div>
                             <div class="user-post_header_info">
                                 <div class="user-post_header_info_name">
-                                    <span>{{ post.user.firstname }} {{ post.user.lastname }}</span>
+                                    <span>{{ post.userFirstname }} {{ post.userLastname }}</span>
                                 </div>
                                 <div class="user-post_header_info_date">
                                     <span>Le {{ post.createdAt.slice(0,10).split('-').reverse().join('.') + ' à ' + post.createdAt.slice(11,16) }}</span>
@@ -54,15 +54,13 @@
                         <div v-if="post.image !== null" class="user-post_body_pic">
                             <img :src="post.image" alt="Image du post">
                         </div>
-                            <div class="user-post_body_pic_action">
-                                <div class="user-post_body_pic_action_like">
-                                    <i v-if="post.comments.find(comment => comment.userId == userId)" @click="likePost(post.id)" class="far fa-heart"></i>
-                                    <i v-else @click="likePost(post.id)" class="fas fa-heart"></i>
+                            <div  class="user-post_body_pic_action">
+                                <a href="#" @click.prevent="likePost(post)" class="user-post_body_pic_action_like">
+                                    <i  class="fas fa-heart"></i>
                                     <span v-if="post.likesCount >= 1" id="comment">{{ post.likesCount }}</span>
-                                </div>
+                                </a>
                                 <a href="#" @click.prevent="getComments(post.id)" class="user-post_body_pic_action_comment">
-                                    <i v-if="post.comments.find(comment => comment.userId == userId)" class="fas fa-comment"></i>
-                                    <i v-else class="far fa-comment"></i>
+                                    <i class="fas fa-comment"></i>
                                     <span v-if="post.commentsCount >= 1" id="comment">{{ post.commentsCount }}</span>
                                 </a>
                             </div>
@@ -87,7 +85,7 @@ export default {
     data() {
         return {
             userInfo: {},
-            userPost: [],
+            postInfo: [],
             postUser: [],
             userId: localStorage.getItem('id')
         }
@@ -95,18 +93,17 @@ export default {
     mounted() {
         let id = localStorage.getItem('id')
         axios.get('http://localhost:3000/api/user/' + id)
-            .then(response => {
-                this.userInfo = response.data;
-                this.$store.state.isUserConnected = true;
-                               
+            .then(res => {
+                this.userInfo = res.data;
+                this.$store.state.isUserConnected = true;                               
             })
             .catch(error => {
                 console.log(error)
              });
         axios.get('http://localhost:3000/api/post')
             .then(res => {
-                this.userPost = res.data;
-                console.log(this.userPost)
+                this.postInfo = res.data;
+                console.log(this.postInfo)
             })
             .catch(error => {
                 console.log(error)
@@ -146,22 +143,26 @@ export default {
                     })
                 .catch((error) => console.log(error))
         },
-        likePost(postId) {
-            axios.get('http://localhost:3000/api/like/post/' + postId)
-                .then(res => console.log(res))
-                .catch(error => console.log(error))
-            /* const userId = parseInt(localStorage.getItem('id'), 10)
+        likePost(post) {
+            const userId = parseInt(localStorage.getItem('id'), 10)
             const hasLiked = true;
-                if(this.userPost.userId !== userId){                           
-                axios.post('http://localhost:3000/api/like/post/' + postId + '/user/' + userId, {hasLiked} )
-                    .then(res => console.log(res))
-                    .catch(error => console.log(error))  
-            }
-            else {
-                axios.delete('http://localhost:3000/api/like/post/' + postId + '/user/' + userId)
-                    .then(res => console.log("Le like a bien été supprimé !", res))
-                    .catch(error => console.log(error))   
-            }     */        
+            axios.get('http://localhost:3000/api/like/post/' + post.id + '/user/' + userId)
+                .then(res => {
+                    let like = res.data;
+                    if(like == null){
+                       axios.post('http://localhost:3000/api/like/post/' + post.id + '/user/' + userId, {hasLiked})
+                            .then(res => console.log(res))
+                            .catch(error => console.log(error))
+                            location.reload()
+                    }
+                    else {
+                        axios.delete('http://localhost:3000/api/like/post/' + post.id + '/user/' + userId)
+                            .then(res => console.log("Le like a bien été supprimé !", res))
+                            .catch(error => console.log(error))
+                            location.reload()
+                    }
+                })
+                .catch(error => console.log(error))
         }
     }
 }

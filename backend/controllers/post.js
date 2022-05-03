@@ -1,39 +1,34 @@
 const sequelize = require('../utils/database');
+const { QueryTypes } = require('sequelize');
 const Post = require('../models/post');
 const User = require('../models/user');
 const Like = require('../models/like');
 const Comment = require('../models/comment');
 
-exports.getPost = (req, res, next) => {
-    Post.findAll({
-        attributes: {
-            include: [
-                [sequelize.fn('COUNT', sequelize.col('comments.id')), 'commentsCount'],
-                [sequelize.fn('COUNT', sequelize.col('likes.id')), 'likesCount']
-            ]
-        }
-        ,
-        include: [
-            {
-                model: Comment,
-                attributes: ['userId']
-            },
-            {
-                model: Like,
-                attributes: ['userId']
-            },
-            {
-                model: User,
-                attributes: ['firstname', 'lastname', 'imageUrl']
-            }
-        ],
-        order: [['createdAt', 'DESC']],
-        group: ['post.id']
+exports.getPosts = (req, res, next) => {
+    sequelize.query(`
+    SELECT p.*,
+    user.firstname AS userFirstname,
+    user.imageUrl AS userAvatar,
+    user.lastname AS userLastname,
+    COUNT(DISTINCT c.id) AS commentsCount,
+    COUNT(DISTINCT l.id) AS likesCount
+    FROM posts p
+    LEFT JOIN comments c
+    ON p.id = c.postId
+    LEFT JOIN likes l 
+    ON p.id = l.postId
+    INNER JOIN users user
+    ON p.userId = user.id
+    GROUP BY p.id
+    ORDER BY p.createdAt DESC
+    LIMIT 6
+    `, {
+        type: QueryTypes.SELECT
     })
-    .then(posts => res.status(200).json(posts))
-    .catch(error => console.log(error))
+        .then(posts => res.status(200).json(posts))
+        .catch(error => res.status(500).json(error))
 }
-
 
 exports.createPost = (req, res, next) => {
     if(req.file){
