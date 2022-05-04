@@ -4,7 +4,6 @@ const Like = require('../models/like')
 
 exports.sendLike = (req, res, next) => {
     Like.create({
-        hasLiked: req.body.hasLiked,
         userId: parseInt(req.params.userId, 10),
         postId: parseInt(req.params.postId, 10)
     })

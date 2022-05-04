@@ -9,10 +9,6 @@ const Like = sequelize.define('like', {
         allowNull: false,
         primaryKey: true
     },
-    hasLiked: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false
-    },
     userId: {
         type: Sequelize.INTEGER,
         allowNull: false

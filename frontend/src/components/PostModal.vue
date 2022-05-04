@@ -83,7 +83,6 @@ export default {
 .post-modal{
     display: flex;
     justify-content: center;
-    align-items: center;
     backdrop-filter: blur(14px);
     position: absolute;
     left: 0;

@@ -35,7 +35,7 @@ exports.createPost = (req, res, next) => {
         Post.create({
                 content: req.body.content,
                 image: `${req.protocol}://${req.get('host')}/api/post/images/${req.file.filename}`,
-                userId: req.params.id    
+                userId: req.params.userId    
         })
     .then(post => res.status(201).json({message: 'Publication avec photo envoyée avec succés', post}))
     .catch(error => {res.status(500).json(error)})
@@ -43,7 +43,7 @@ exports.createPost = (req, res, next) => {
     else {
         Post.create({
             content: req.body.content,
-            userId: req.params.id    
+            userId: req.params.userId    
     })
 .then(post => res.status(201).json({message: 'Message publié avec succés', post}))
 .catch(error => {res.status(500).json(error)})

@@ -56,8 +56,9 @@
                         </div>
                             <div  class="user-post_body_pic_action">
                                 <a href="#" @click.prevent="likePost(post)" class="user-post_body_pic_action_like">
-                                    <i  class="fas fa-heart"></i>
-                                    <span v-if="post.likesCount >= 1" id="comment">{{ post.likesCount }}</span>
+                                    <i v-if="post.likesCount >= 1" class="fas fa-heart"></i>
+                                    <i v-else class="far fa-heart"></i>
+                                    <span v-if="post.likesCount >= 1" id="like">{{ post.likesCount }}</span>
                                 </a>
                                 <a href="#" @click.prevent="getComments(post.id)" class="user-post_body_pic_action_comment">
                                     <i class="fas fa-comment"></i>
@@ -87,6 +88,7 @@ export default {
             userInfo: {},
             postInfo: [],
             postUser: [],
+            postLikes: [],
             userId: localStorage.getItem('id')
         }
     },
@@ -108,6 +110,7 @@ export default {
             .catch(error => {
                 console.log(error)
              });
+
     },
     methods: {
         showModalProfil() {
@@ -145,12 +148,11 @@ export default {
         },
         likePost(post) {
             const userId = parseInt(localStorage.getItem('id'), 10)
-            const hasLiked = true;
             axios.get('http://localhost:3000/api/like/post/' + post.id + '/user/' + userId)
                 .then(res => {
                     let like = res.data;
                     if(like == null){
-                       axios.post('http://localhost:3000/api/like/post/' + post.id + '/user/' + userId, {hasLiked})
+                       axios.post('http://localhost:3000/api/like/post/' + post.id + '/user/' + userId)
                             .then(res => console.log(res))
                             .catch(error => console.log(error))
                             location.reload()
