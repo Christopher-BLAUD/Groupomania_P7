@@ -473,7 +473,7 @@ section{
         &_pic{
             overflow: hidden;
             margin: 30px;
-            height: 568px;
+            height: 460px;
             border-radius: 15px;
             position: relative;
             & img{
