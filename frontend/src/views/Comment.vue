@@ -2,7 +2,7 @@
     <div class="comments">
         <div class="comments_title">
             <div class="comments_title_come-back">
-                <router-link @click="clearStorage" to="/home">
+                <router-link @click="clearStorage()" to="/home">
                     <i class="fas fa-arrow-alt-circle-left"></i>
                     <span>Retour au fil d'actualité</span>
                 </router-link>
@@ -50,6 +50,8 @@ export default {
     },
     mounted() {
         let postId = localStorage.getItem('postId');
+
+        // Affiche tous les commentaires liés au post
         axios.get('http://localhost:3000/api/comment/post/' + postId)
             .then(res => {
                 this.comments = res.data;
@@ -57,6 +59,8 @@ export default {
             })
             .catch(error => console.log(error));
         let id = localStorage.getItem('id')
+
+        // Importe les informations de l'utilisateur pour vérifier son status
         axios.get('http://localhost:3000/api/user/' + id)
             .then(response => {
                 this.userInfo = response.data;
@@ -67,6 +71,8 @@ export default {
              });
     },
     methods: {
+
+        // Supprime le commentaire concerné en vérifiant le status de l'utilisateur 
         deleteComment(id){
             const token = localStorage.getItem('token')
             axios.delete('http://localhost:3000/api/comment/delete/' + id, {
@@ -84,6 +90,8 @@ export default {
                     })
                 .catch(error => console.log(error));
         },
+
+        // Envoi un nouveau commentaire
         sendComment() {
             const userId = localStorage.getItem('id');
             const postId = localStorage.getItem('postId');

@@ -1,6 +1,6 @@
 <template>
     <main>
-        <div class="home-page">
+        <div v-if="userId" class="home-page">          
             <section class="user-banner">
                 <div class="user-banner_body">
                     <div v-if="userInfo.imageUrl" class="user-banner_body_img-profil">
@@ -11,10 +11,10 @@
                     </div>
                     <div class="user-banner_body_action">
                         <a href="#" tabindex="0" class="user-banner_body_action_edit-profil" @click.prevent="showModalProfil">
-                            <i class="fas fa-user-cog"></i>
+                            <i class="fas fa-user-cog" aria-label="Bouton modification du profil"></i>
                         </a>
-                        <a href="#" class="user-banner_body_action_disconnet" @click.prevent="disconnect">
-                            <i class="fas fa-power-off"></i>
+                        <a class="user-banner_body_action_disconnet" @click.prevent="disconnect">
+                            <i class="fas fa-power-off" aria-label="Bouton déconnexion"></i>
                         </a>
                     </div>
                 </div>                
@@ -45,7 +45,7 @@
                         </div>
                         <a href="#" v-if="post.userId == userId || userInfo.isAdmin" @click.prevent="deletePost(post.id)" class="user-post_header_delete">
                             <i class="far fa-trash-alt"></i>
-                        </a>                        
+                        </a>
                     </div>
                     <div class="user-post_body">
                         <div class="user-post_body_legend">
@@ -56,12 +56,12 @@
                         </div>
                             <div  class="user-post_body_pic_action">
                                 <a href="#" @click.prevent="likePost(post)" class="user-post_body_pic_action_like">
-                                    <i v-if="post.likesCount >= 1" class="fas fa-heart"></i>
-                                    <i v-else class="far fa-heart"></i>
+                                    <i v-if="post.likesCount >= 1" class="fas fa-heart" id="full-heart" aria-label="Bouton j'aime"></i>
+                                    <i v-else class="far fa-heart" id="empty-heart" aria-label="Bouton j'aime"></i>
                                     <span v-if="post.likesCount >= 1" id="like">{{ post.likesCount }}</span>
                                 </a>
                                 <a href="#" @click.prevent="getComments(post.id)" class="user-post_body_pic_action_comment">
-                                    <i class="fas fa-comment"></i>
+                                    <i class="fas fa-comment" aria-label="bouton commentaire"></i>
                                     <span v-if="post.commentsCount >= 1" id="comment">{{ post.commentsCount }}</span>
                                 </a>
                             </div>
@@ -69,12 +69,14 @@
                 </div>
             </section>
         </div>
+            <NotFound v-else />
     </main>
 </template>
 
 <script>
 import ProfilModal from '../components/ProfilModal.vue'
 import PostModal from '../components/PostModal.vue'
+import NotFound from '../components/404NotFound.vue'
 
 import axios from 'axios';
 
@@ -82,7 +84,7 @@ import axios from 'axios';
 
 export default {
     name: 'HomePage',
-    components: {ProfilModal, PostModal},
+    components: {ProfilModal, PostModal, NotFound},
     data() {
         return {
             userInfo: {},
@@ -94,6 +96,8 @@ export default {
     },
     mounted() {
         let id = localStorage.getItem('id')
+
+        // Permet d'afficher les informations de l'utilisateur connecté
         axios.get('http://localhost:3000/api/user/' + id)
             .then(res => {
                 this.userInfo = res.data;
@@ -102,10 +106,11 @@ export default {
             .catch(error => {
                 console.log(error)
              });
+
+        // Affiche les 6 derniers posts 
         axios.get('http://localhost:3000/api/post')
             .then(res => {
                 this.postInfo = res.data;
-                console.log(this.postInfo)
             })
             .catch(error => {
                 console.log(error)
@@ -113,20 +118,30 @@ export default {
 
     },
     methods: {
+
+        // Affiche le fenetre modal du profil
         showModalProfil() {
             this.$store.commit('SHOW_MODAL_PROFIL');
         },
+
+        // Affiche le fenetre modal du post
         showModalPost() {
             this.$store.commit('SHOW_MODAL_POST');
         },
+
+        // Renvoi vers la page commentaire du post concerné
         getComments(postId) {
             localStorage.setItem('postId', postId)
             this.$router.push({path: '/post/comments'})
         },
+
+        // Déconnecte l'utilisateur
         disconnect() {
             localStorage.clear();
             this.$router.push({path: '/login'});
         },
+
+        // Supprime un post en vérifiant si l'utilisateur à le status d'admin
         deletePost(id) {
             const token = localStorage.getItem('token');
             if(confirm('Êtes-vous sûr(e) de vouloir supprimer ce post ?'))
@@ -146,6 +161,8 @@ export default {
                     })
                 .catch((error) => console.log(error))
         },
+
+        // Like le post concerné            
         likePost(post) {
             const userId = parseInt(localStorage.getItem('id'), 10)
             axios.get('http://localhost:3000/api/like/post/' + post.id + '/user/' + userId)
@@ -374,6 +391,7 @@ section{
     }
 
 .user-post{
+    position: relative;
     width: 840px;
     background-color: #202020;
     border-radius: 20px;
@@ -446,7 +464,6 @@ section{
             display: flex;
             justify-content: center;
             font-size: 20px;
-            font-weight: lighter;
             margin: 15px 0;
             padding: 0 13px;
             @include mobile{
@@ -496,7 +513,7 @@ section{
                 &_like{
                     display: flex;
                     & i{
-                        color:rgb(255, 0, 0)
+                        color:rgb(255, 0, 0);
                     }
                 }
             }
@@ -506,5 +523,18 @@ section{
 
 #comment{
     cursor: pointer;
+}
+
+.change-icon{
+    animation: switchIcon .5s ease-in-out both;
+}
+
+@keyframes switchIcon {
+    from{
+        transform: scale(0)
+    }
+    to{
+        transform: scale(1)
+    }
 }
 </style>

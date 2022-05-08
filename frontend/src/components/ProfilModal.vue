@@ -14,6 +14,7 @@
                                 <ModidyBtn @click.prevent="getFile()"/>
                                 <input @change="imgUploaded()" type="file" name="avatar" id="user-avatar" style="display:none">
                             </div>
+                                <span id="attachment-name"></span>
                         </div>
                         <BaseButton value="Envoyer" @click.prevent="getUserAvatar()"/>
                         <button class="delete-account" type="submit" @click.prevent="deleteAccount">Supprimer votre compte</button>
@@ -39,14 +40,22 @@ export default {
         }
     },
     methods: {
+
+        // Utilisé pour styliser le input file
         getFile() {
             document.querySelector('#user-avatar').click();
         },
+
+        // Enregistre l'image dans une variable
         imgUploaded(){
-            const inputFile = document.querySelector('#user-avatar')
+            const inputFile = document.querySelector('#user-avatar');
+            const attachmentName = document.querySelector('#attachment-name')
             this.avatar = inputFile.files[0];
-            console.log(this.avatar);
+            console.log(this.avatar)
+            attachmentName.innerHTML = this.avatar.name
         },
+
+        // Assigne une image au profil de l'utilisateur 
         getUserAvatar() {
             const userId = localStorage.getItem('id');
             const formDataUser = new FormData();
@@ -67,6 +76,8 @@ export default {
         showModalProfil() {
             this.$store.commit('SHOW_MODAL_PROFIL');
         },
+
+        // Supprime le compte de l'utilisateur connecté
         deleteAccount() {
             const userId = localStorage.getItem('id');
             const token = localStorage.getItem('token');
@@ -75,14 +86,14 @@ export default {
                     "Authorization": "Bearer " + token 
                 }
             }
-            axios.delete('http://localhost:3000/api/user/delete-account/' + userId, config)
-            .then(() => {
-                if(confirm('Cette action est irréversible. Êtes-vous sûr ?')){
-                    localStorage.clear();
-                    this.$router.push({path: 'login'});
-                }
-            })
-            .catch(error => console.log(error))
+            if(confirm('Cette action est irréversible. Êtes-vous sûr ?')){
+                axios.delete('http://localhost:3000/api/user/delete-account/' + userId, config)
+                .then(() => {
+                        localStorage.clear();
+                        this.$router.push({path: 'login'});
+                })
+                .catch(error => console.log(error))
+            }
         }
     }
 }
@@ -101,7 +112,7 @@ export default {
     left: 0;
     backdrop-filter: blur(4px);
     &_edit{
-        min-width: 350px;
+        width: 350px;
         position: absolute;
         top: 100px;
         left: 40%;
@@ -112,14 +123,14 @@ export default {
         animation: show-modal .5s ease-in-out both;
         @include mobile{
             left: 20px;
-            min-width: 300px;
+            width: 250px;
         }
         &_title{
             position: relative;
             & h2{
                 color: $primary-color;
             }
-            & i{
+            & a{
                 position: absolute;
                 top: -19px;
                 right: 5px;
@@ -134,6 +145,11 @@ export default {
                 justify-content: space-between;
                 align-items: center;
                 margin: 15px 0;
+                & h3{
+                    @include mobile{
+                        font-size: 16px;
+                    }
+                }
             }
             &_container{
                 display: flex;
@@ -197,6 +213,14 @@ form{
             &:hover{
               transform: scale(1.1);
             }
+    }
+}
+#attachment-name{
+    margin-top: 0;
+    margin-left: 15px;
+    color: #fff;
+    @include mobile{
+        margin-left: 0;
     }
 }
 </style>

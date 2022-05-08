@@ -14,26 +14,7 @@ exports.getUser = (req, res, next) => {
     .catch((error) => res.status(500).json(error))
 }
 
-
-// Inscrisption de l'utilisateur 
-/* exports.signUp = (req, res, next) => {
-sequelize.sync()
-    bcrypt.hash(req.body.password, 10)
-    .then(hash => {
-        return User.create({
-            lastname: req.body.lastname,
-            firstname: req.body.firstname,
-            email: req.body.email,
-            password: hash
-        })
-    })
-    .then(user => {
-        res.status(201).json({message: "Utilisateur créé avec succès !", user})
-    })
-    .catch((err) => {
-        console.log(err);
-    });
-} */
+// Créer un nouvel utilisateur 
 exports.signUp = (req, res, next) => {
     User.findOne({
         where: {

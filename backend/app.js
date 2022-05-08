@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 
+
 // Routes
 const userRoutes = require('./routes/user');
 const postRoutes = require('./routes/post');

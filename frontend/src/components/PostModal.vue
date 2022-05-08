@@ -7,11 +7,12 @@
                             </a>
                             <h2>Créer une publication</h2>
                             <span>Votre message</span>
-                                <textarea @change="showMessage()" v-model="$store.state.postMessage" name="" id="" cols="60" rows="10"></textarea>
+                                <textarea v-model="$store.state.postMessage" name="" id="" cols="60" rows="10"></textarea>
                                 <span>Joindre une image</span>
                                 <div class="post-modal_edit_join">
                                     <button class="post-modal_edit_join_btn" @click.prevent="getPostFile()">Parcourir</button>
                                     <input @change="postAttachmentUploaded()" type="file" name="image" id="join-img" style="display:none">
+                                    <span id="attachment-name"></span>
                                 </div>
                                 <BaseButton @click.prevent="sendPost()" value="Poster !" />
                         </div>
@@ -34,20 +35,24 @@ export default {
         }
     },
     methods: {
-        showMessage(){
-            console.log(this.message);
-        },
         showModalPost() {
             this.$store.commit('SHOW_MODAL_POST');
         },
+
+        // Utilisé pour styliser le input file
         getPostFile() {
             document.querySelector('#join-img').click();
         },
+
+        // Enregiste le média dans une variable
         postAttachmentUploaded() {
             const inputFilePost = document.querySelector('#join-img');
+            const attachmentName = document.querySelector('#attachment-name')
             this.postAttachment = inputFilePost.files[0];
-            console.log(this.postAttachment)
+            attachmentName.innerHTML = this.postAttachment.name
         },
+
+        // Envoi le post en vérifiant qu'il contient au minimum du texte
         sendPost() {
             const userId = localStorage.getItem('id');
             const token = localStorage.getItem('token');
@@ -177,6 +182,15 @@ export default {
                 }
             }
         }
+    }
+}
+
+#attachment-name{
+    margin-top: 0;
+    margin-left: 15px;
+    color: #fff;
+    @include mobile{
+        margin-left: 0;
     }
 }
 // Animation 

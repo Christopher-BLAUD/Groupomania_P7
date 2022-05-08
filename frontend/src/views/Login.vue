@@ -25,7 +25,6 @@ import axios from 'axios';
 import BaseButton from "../components/BaseButton.vue"
 import Navi from '../components/Navi.vue'
 const passwordRegex = /^[A-Z][a-z]{5,}[0-9]{2,}/;
-/* const passValidationMsg = document.querySelector('.pass-msg-err'); */
 let e = true;
 
 export default {
@@ -40,6 +39,8 @@ export default {
       }
     },
     methods: {
+
+      // Affiche le mot de passe en clair
       showPassword() {
         const eye = document.querySelector('#eye');
         if(e){
@@ -53,6 +54,7 @@ export default {
           e = true;
         }
       },
+
       // Connexion à l'application
       login(){
         const unknowId = document.querySelector('.id-msg-err');
@@ -73,6 +75,7 @@ export default {
             });
         }
       },
+
       // Contrôle du mot de passe
       passwordValidation() {
         if(passwordRegex.test(this.password) || this.password === ""){

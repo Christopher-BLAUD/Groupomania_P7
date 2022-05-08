@@ -2,6 +2,8 @@ const sequelize = require('../utils/database');
 const Comment = require('../models/comment');
 const User = require('../models/user')
 
+
+// Affiche tous les commentaires du post concerné
 exports.getAllComments = (req, res, next) => {
     Comment.findAll({
         where: {
@@ -18,6 +20,8 @@ exports.getAllComments = (req, res, next) => {
 
 };
 
+
+// Créer un nouveau commentaire 
 exports.createComment = (req, res, next) => {
     Comment.create({
         content: req.body.comment,
@@ -28,6 +32,8 @@ exports.createComment = (req, res, next) => {
     .catch(error => res.status(500).json(error))
 };
 
+
+// Supprime un commentaire
 exports.deleteComment = (req, res, next) => {
     if(req.body.isAdmin){
         Comment.destroy({

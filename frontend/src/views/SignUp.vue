@@ -51,7 +51,7 @@ export default {
     },
     methods: {
       
-      // Affiche le mot de passe en clair dans le champs
+      // Affiche le mot de passe en clair
       showPassword() {        
         const eye = document.querySelector('#eye');
         if(e){
@@ -65,6 +65,7 @@ export default {
           e = true;
         }
       },
+
       // Contrôle de le saisie formulaire
       lastNameValidation() {
         if(nameRegex.test(this.lastName) || this.lastName === ""){
@@ -90,6 +91,7 @@ export default {
           document.querySelector('.pass-msg-err').classList.add('reveal');
         }
       },
+
       // Redirection vers la page Login quand le compte a été crée
       loginRedirection() {
         if(this.lastName !== "" && this.firstName !== "" && this.email && this.password !== "") {
@@ -97,6 +99,8 @@ export default {
           this.$router.push({path: '/login'})
         } 
       },
+
+      // Enregistre un nouvel utilisateur 
       createUser() {
         const existingUser = document.querySelector('.user-msg-err')
         if(nameRegex.test(this.lastName) && nameRegex.test(this.firstName) && passwordRegex.test(this.password) && this.lastName !== '' && this.firstName !== '' && this.email !== '' && this.password !== ''){

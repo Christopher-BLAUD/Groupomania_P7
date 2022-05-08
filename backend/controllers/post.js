@@ -5,6 +5,7 @@ const User = require('../models/user');
 const Like = require('../models/like');
 const Comment = require('../models/comment');
 
+// Affiche les 6 derniers post avec les infos utilisateur, commentaire et like
 exports.getPosts = (req, res, next) => {
     sequelize.query(`
     SELECT p.*,
@@ -30,6 +31,7 @@ exports.getPosts = (req, res, next) => {
         .catch(error => res.status(500).json(error))
 }
 
+// Créer un nouveau post
 exports.createPost = (req, res, next) => {
     if(req.file){
         Post.create({
@@ -50,6 +52,8 @@ exports.createPost = (req, res, next) => {
     }
 }
 
+
+// Supprime un post
 exports.deletePost = (req, res, next) => {
     if(req.body.isAdmin) {
         Post.destroy({
