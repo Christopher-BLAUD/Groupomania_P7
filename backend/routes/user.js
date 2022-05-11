@@ -8,7 +8,7 @@ const auth = require('../middlewares/auth')
 router.get('/:id', userCtrl.getUser);
 router.post('/signup', userCtrl.signUp);
 router.post('/login', userCtrl.login);
-router.post('/images/:id', auth, multer, userCtrl.addUserAvatar)
+router.put('/images/:id', auth, multer, userCtrl.addUserAvatar)
 router.delete('/delete-account/:id', auth, userCtrl.deleteUserAccount)
 
 

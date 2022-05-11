@@ -189,14 +189,14 @@ a{
                 align-items: center;
                 justify-content: center;
                 width: 80px;
-                height: 80px;
-                max-height: 80px;
+                height: 90px;
+                max-height: 90px;
                 border-radius: 50%;
                 overflow: hidden;
                 margin: 0 20px;
                 @include mobile{
                     width: 40px;
-                    height: 40px
+                    height: 50px
                 }
                 & img{
                     @include img-size;
@@ -204,7 +204,6 @@ a{
             }
             &_user-txt{
                 display: flex;
-                font-weight: lighter;
                 @include mobile{
                     font-size: 14px;
                     width: 240px;

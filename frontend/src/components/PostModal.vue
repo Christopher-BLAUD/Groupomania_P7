@@ -109,7 +109,7 @@ export default {
         transform-origin: center;
         animation: show-modal .5s ease-in-out both;
         @include mobile{
-            width: 350px;
+            width: 310px;
             height: 530px;
         }
         @include touch-pad{
@@ -141,14 +141,19 @@ export default {
             color: #fff;
             font-family: $font;
             @include mobile{
-                width: 340px;
+                width: 280px;
             }
         }
-        & i{
+        & a{ 
+            align-self: start;
             position: absolute;
             top: 20px;
             right: 20px;
             cursor: pointer;
+            @include mobile{
+                top: 10px;
+                right: 14px;
+            }
         }
         &_join{
             display: flex;

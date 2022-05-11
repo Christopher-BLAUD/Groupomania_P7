@@ -66,7 +66,7 @@ export default {
                     "Authorization": "Bearer " + token 
                 }
             }
-            axios.post('http://localhost:3000/api/user/images/' + userId, formDataUser, config)
+            axios.put('http://localhost:3000/api/user/images/' + userId, formDataUser, config)
             .then((res) => {
                 console.log(res)
                 location.reload();

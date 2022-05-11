@@ -13,7 +13,13 @@ exports.getPosts = (req, res, next) => {
     user.imageUrl AS userAvatar,
     user.lastname AS userLastname,
     COUNT(DISTINCT c.id) AS commentsCount,
-    COUNT(DISTINCT l.id) AS likesCount
+    COUNT(DISTINCT l.id) AS likesCount,
+    (
+        SELECT l2.userId 
+        FROM likes l2
+        WHERE l2.userId = ${req.params.id}
+        AND l2.postId = p.id
+    ) AS userWhoLiked
     FROM posts p
     LEFT JOIN comments c
     ON p.id = c.postId

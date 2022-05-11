@@ -56,7 +56,7 @@
                         </div>
                             <div  class="user-post_body_pic_action">
                                 <a href="#" @click.prevent="likePost(post)" class="user-post_body_pic_action_like">
-                                    <i v-if="post.likesCount >= 1" class="fas fa-heart" id="full-heart" aria-label="Bouton j'aime"></i>
+                                    <i v-if="post.userWhoLiked == userId" class="fas fa-heart" id="full-heart" aria-label="Bouton j'aime"></i>
                                     <i v-else class="far fa-heart" id="empty-heart" aria-label="Bouton j'aime"></i>
                                     <span v-if="post.likesCount >= 1" id="like">{{ post.likesCount }}</span>
                                 </a>
@@ -81,7 +81,6 @@ import NotFound from '../components/404NotFound.vue'
 import axios from 'axios';
 
 
-
 export default {
     name: 'HomePage',
     components: {ProfilModal, PostModal, NotFound},
@@ -96,6 +95,7 @@ export default {
     },
     mounted() {
         let id = localStorage.getItem('id')
+       
 
         // Permet d'afficher les informations de l'utilisateur connecté
         axios.get('http://localhost:3000/api/user/' + id)
@@ -108,9 +108,10 @@ export default {
              });
 
         // Affiche les 6 derniers posts 
-        axios.get('http://localhost:3000/api/post')
+        axios.get('http://localhost:3000/api/post/user/' + id)
             .then(res => {
                 this.postInfo = res.data;
+                console.log(this.postInfo)
             })
             .catch(error => {
                 console.log(error)
@@ -164,21 +165,25 @@ export default {
 
         // Like le post concerné            
         likePost(post) {
+            let postLiked = this.postInfo.find(p => p.id == post.id)
             const userId = parseInt(localStorage.getItem('id'), 10)
+
             axios.get('http://localhost:3000/api/like/post/' + post.id + '/user/' + userId)
                 .then(res => {
                     let like = res.data;
                     if(like == null){
+                        postLiked.likesCount++
+                        postLiked.userWhoLiked = this.userId
                        axios.post('http://localhost:3000/api/like/post/' + post.id + '/user/' + userId)
                             .then(res => console.log(res))
                             .catch(error => console.log(error))
-                            location.reload()
                     }
                     else {
+                        postLiked.likesCount--
+                        postLiked.userWhoLiked = !this.userId
                         axios.delete('http://localhost:3000/api/like/post/' + post.id + '/user/' + userId)
                             .then(res => console.log("Le like a bien été supprimé !", res))
                             .catch(error => console.log(error))
-                            location.reload()
                     }
                 })
                 .catch(error => console.log(error))
@@ -218,7 +223,6 @@ main{
 }
 .user-banner{
     min-height: 125px;
-    /* width: 400px; */
     padding: 15px;
     margin: 0 10px;
     display: flex;
@@ -227,7 +231,6 @@ main{
     justify-content: space-around;
     align-items: center;
     position: relative;
-    /* background-color: #0000001c; */
     border-radius: 15px;
     @include mobile{
         width: 330px;
@@ -267,14 +270,14 @@ main{
         &_img-profil{
             display: flex;
             width: 90px;
-            height: 90px;
+            height: 110px;
             border-radius: 50%;
             overflow: hidden;
             @include mobile{
                 align-self: center;
                 margin: 40px;
                 width: 150px;
-                height: 150px;
+                height: 170px;
             }
             @include touch-pad{
                 align-self: center;
@@ -366,19 +369,18 @@ section{
             margin-bottom: 60px;
         }
         & input{
-            width: calc(100% - 180px);
+            width: 100%;
             height: 50px;
             padding-left: 30px;
-            padding-right: 150px;
+            padding-right: 130px;
             background-color: #202020;
             border: none;
             border-radius: 25px;
             color: #fff;
             font-family: $font;
             @include mobile{
-                width: calc(100% - 115px);
                 padding-left: 15px;
-                padding-right: 100px;
+                padding-right: 115px;
                 font-size: 12px;
             }
             &::placeholder{
@@ -402,7 +404,7 @@ section{
     @include mobile{
         width: calc(100% - 60px);
         margin-left: 0;
-        margin: 60px 0;
+        margin: 30px 0;
     }
     @include touch-pad{
         width: 80%;
@@ -430,7 +432,7 @@ section{
         }
         &_pic{
             width: 50px;
-            height: 50px;
+            height: 60px;
             border-radius: 50%;
             overflow: hidden;
             margin: 15px;
@@ -524,6 +526,7 @@ section{
 #comment{
     cursor: pointer;
 }
+
 
 .change-icon{
     animation: switchIcon .5s ease-in-out both;
