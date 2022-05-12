@@ -61,8 +61,7 @@
                                     <span v-if="post.likesCount >= 1" id="like">{{ post.likesCount }}</span>
                                 </a>
                                 <a href="#" @click.prevent="getComments(post.id)" class="user-post_body_pic_action_comment">
-                                    <i v-if="post.userWhoCommented == userId" class="fas fa-comment" aria-label="bouton commentaire"></i>
-                                    <i v-else class="far fa-comment" aria-label="bouton commentaire"></i>
+                                    <i class="far fa-comment" aria-label="bouton commentaire"></i>
                                     <span v-if="post.commentsCount >= 1" id="comment">{{ post.commentsCount }}</span>
                                 </a>
                             </div>
@@ -284,7 +283,7 @@ main{
                 align-self: center;
                 margin: 30px;
                 width: 150px;
-                height: 150px;
+                height: 170px;
             }
                 & img{
                     @include img-size;
@@ -427,6 +426,12 @@ section{
         }
         &_delete{
             cursor: pointer;
+            margin-bottom: 15px;
+            margin-right: 10px;
+            @include mobile {
+                margin-bottom: 5px;
+                margin-right: 5px;
+            }
             &:hover{
                 color: darken(#fff, 15%);
             }
@@ -445,12 +450,17 @@ section{
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
+            max-width: 500px;
+            @include mobile{
+                max-width: 170px;
+            }
             &_name{
                 display: flex;
                 font-weight: bold;
                 color: $primary-color;
+                text-align: start;
                 @include mobile{
-                    text-align: start;
+                    word-break: break-all;
                 }
             }
             &_date{

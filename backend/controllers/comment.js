@@ -9,10 +9,11 @@ exports.getAllComments = (req, res, next) => {
         where: {
           postId: req.params.id
         },
-        include: [{
+        include: {
             model: User,
+            attributes: ['imageUrl'],
             required: true
-        }],
+        },
         order: [['createdAt', 'ASC']]
     })
     .then(comments => res.status(200).json(comments))

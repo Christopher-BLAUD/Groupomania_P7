@@ -89,6 +89,7 @@ export default {
             if(confirm('Cette action est irréversible. Êtes-vous sûr ?')){
                 axios.delete('http://localhost:3000/api/user/delete-account/' + userId, config)
                 .then(() => {
+                        this.showModalProfil()
                         localStorage.clear();
                         this.$router.push({path: 'login'});
                 })

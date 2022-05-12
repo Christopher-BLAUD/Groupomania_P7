@@ -19,7 +19,7 @@
                         <i class="far fa-trash-alt"></i>
                     </a>
                     <div class="comments_body_message_user-pic">
-                        <img :src="comment.user.imageUrl" alt="photo du créateur du commentaire">
+                        <img v-if="comment.user.imageUrl" :src="comment.user.imageUrl" alt="photo du créateur du commentaire">
                     </div>
                 </div>
                 <div class="comments_body_message_user-txt">
@@ -55,7 +55,7 @@ export default {
         axios.get('http://localhost:3000/api/comment/post/' + postId)
             .then(res => {
                 this.comments = res.data;
-                this.hasComments = true
+                console.log(this.comments)
             })
             .catch(error => console.log(error));
         let id = localStorage.getItem('id')
@@ -72,7 +72,7 @@ export default {
     },
     methods: {
 
-        // Supprime le commentaire concerné en vérifiant le status de l'utilisateur 
+        // Supprime le commentaire concerné
         deleteComment(id){
             const token = localStorage.getItem('token')
             axios.delete('http://localhost:3000/api/comment/delete/' + id, {
@@ -84,11 +84,9 @@ export default {
                     isAdmin: this.userInfo.isAdmin
                 }
             })
-                .then(res => {
-                    console.log('Commentaire supprimé !', res);
-                    location.reload();
-                    })
-                .catch(error => console.log(error));
+                .then(res => console.log('Commentaire supprimé !', res))
+                .catch(error => console.log(error))
+            location.reload()
         },
 
         // Envoi un nouveau commentaire
@@ -97,6 +95,7 @@ export default {
             const postId = localStorage.getItem('postId');
             const token = localStorage.getItem('token');
             let comment = this.comment;
+
             if(comment == "") {
                 alert(`Attention votre commentaire est vide `)
             }
@@ -106,12 +105,9 @@ export default {
                         "Authorization": "Bearer " + token 
                     }
                 })
-                    .then(res => {
-                        console.log(res);
-                        location.reload();
-    
-                        })
+                    .then(res => console.log(res))
                     .catch(error => console.log(error))
+                location.reload()
             }
         },
         clearStorage() {
