@@ -43,7 +43,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="#" v-if="post.userId == userId || userInfo.isAdmin" @click.prevent="deletePost(post.id)" class="user-post_header_delete">
+                        <a href="#" v-if="post.userId == userId || userInfo.isAdmin" @click.prevent="deletePost(post.id)" class="user-post_header_delete" aria-label="Supprimer le post">
                             <i class="far fa-trash-alt"></i>
                         </a>
                     </div>
