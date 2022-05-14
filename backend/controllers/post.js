@@ -5,7 +5,7 @@ const User = require('../models/user');
 const Like = require('../models/like');
 const Comment = require('../models/comment');
 
-// Affiche les 6 derniers post avec les infos utilisateur, commentaire et like
+// Affiche les 6 derniers post avec les infos utilisateur, commentaires et likes
 exports.getPosts = (req, res, next) => {
     sequelize.query(`
     SELECT p.*,

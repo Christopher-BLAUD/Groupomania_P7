@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 const sequelize = require('../utils/database');
 
-
+// Modèle like
 const Like = sequelize.define('like', {
     id: {
         type: Sequelize.INTEGER,

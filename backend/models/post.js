@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize');
 const sequelize = require('../utils/database');
 
+// Modèle post
 const Post = sequelize.define('post', {
     id: {
         type: Sequelize.INTEGER,

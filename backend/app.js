@@ -22,8 +22,6 @@ const path = require('path');
 const { hasUncaughtExceptionCaptureCallback } = require('process');
 
 
-
-
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
@@ -38,8 +36,8 @@ app.use((req, res, next) => {
 /* sequelize.sync({force: true}) */
 /* sequelize.sync({alter: true}) */
 
-// Définition des relations
 
+// Définition des relations
 User.hasMany(Post);
 
 Post.belongsTo(User, {

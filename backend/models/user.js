@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize');
 const sequelize = require('../utils/database');
 
+// Modèle utilisateur
 const User = sequelize.define('user', {
     id: {
         type: Sequelize.INTEGER,

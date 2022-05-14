@@ -10,6 +10,7 @@ exports.sendLike = (req, res, next) => {
     .then(like => res.status(201).json({message: 'Le post a été liké !'}))
     .catch(error => res.status(500).json(error)) 
 }
+
 //  Supprime un like 
 exports.sendUnlike = (req, res, next) => {
     Like.destroy({
