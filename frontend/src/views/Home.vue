@@ -231,7 +231,6 @@ main{
     justify-content: space-around;
     align-items: center;
     position: relative;
-    border-radius: 15px;
     @include mobile{
         width: 330px;
         padding: 15px 0;

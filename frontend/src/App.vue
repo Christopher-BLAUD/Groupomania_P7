@@ -25,6 +25,7 @@ body{
   background: $bg;
   box-sizing: border-box;
   margin: 0;
+  font-family: $font;
 }
 
 main{
@@ -33,7 +34,6 @@ main{
   }
 }
 #app {
-  font-family: montserrat, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

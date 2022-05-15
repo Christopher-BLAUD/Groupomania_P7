@@ -139,7 +139,6 @@ export default {
             min-height: 150px;
             margin: 10px;
             color: #fff;
-            font-family: $font;
             @include mobile{
                 width: 280px;
             }
