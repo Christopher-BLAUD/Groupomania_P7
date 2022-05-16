@@ -199,8 +199,22 @@ export default {
   bottom: -27px;
   right: 309px;
   text-align: center;
+  @include mobile{
+    bottom: 67px;
+    right: -18px;
+  }
+  @include touch-pad{
+    bottom: 67px;
+    right: -18px;
+  }
     &::after{
-      @include left-arrow(54px)
+      @include left-arrow(54px);
+      @include mobile{
+        @include bottom-arrow;
+      }
+      @include touch-pad{
+        @include bottom-arrow;
+      }
       }
           }
 .submit-btn {

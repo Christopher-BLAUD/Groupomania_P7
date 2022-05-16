@@ -61,7 +61,8 @@
                                     <span v-if="post.likesCount >= 1" id="like">{{ post.likesCount }}</span>
                                 </a>
                                 <a href="#" @click.prevent="getComments(post.id)" class="user-post_body_pic_action_comment">
-                                    <i class="far fa-comment" aria-label="bouton commentaire"></i>
+                                    <i v-if="post.userWhoCommented == userId" class="fas fa-comment" aria-label="bouton commentaire"></i>
+                                    <i v-else class="far fa-comment" aria-label="bouton commentaire"></i>
                                     <span v-if="post.commentsCount >= 1" id="comment">{{ post.commentsCount }}</span>
                                 </a>
                             </div>

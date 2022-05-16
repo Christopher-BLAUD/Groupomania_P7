@@ -136,6 +136,10 @@ export default {
                 top: -19px;
                 right: 5px;
                 cursor: pointer;
+                transition: all .2s ease-in-out;
+                &:hover{
+                    transform: scale(1.5);
+                }
             }
         }
         &_pic{

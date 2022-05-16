@@ -238,6 +238,7 @@ a{
                 width: 100%;
                 height: 35px;
                 padding-left: 15px;
+                padding-right: 80px;
                 border-radius: 20px;
                 background-color: #363434;
                 border: none;

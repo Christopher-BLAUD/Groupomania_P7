@@ -19,7 +19,14 @@ exports.getPosts = (req, res, next) => {
         FROM likes l2
         WHERE l2.userId = ${req.params.id}
         AND l2.postId = p.id
-    ) AS userWhoLiked
+    ) AS userWhoLiked,
+    (
+        SELECT c2.userId
+        FROM comments c2
+        WHERE c2.userId = ${req.params.id}
+        AND c2.postId = p.id
+        LIMIT 1
+    ) AS userWhoCommented
     FROM posts p
     LEFT JOIN comments c
     ON p.id = c.postId

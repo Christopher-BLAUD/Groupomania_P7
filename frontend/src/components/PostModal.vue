@@ -149,6 +149,10 @@ export default {
             top: 20px;
             right: 20px;
             cursor: pointer;
+            transition: all .2s ease-in-out;
+                &:hover{
+                    transform: scale(1.5);
+                }
             @include mobile{
                 top: 10px;
                 right: 14px;

@@ -34,6 +34,17 @@
       transform: rotate(45deg);
 }
 
+@mixin  bottom-arrow {
+    content: "";
+      position: absolute;
+      bottom: -3px;
+      right: 125px;
+      width: 10px;
+      height: 10px;
+      background-color: #FF0000;
+      transform: rotate(45deg);
+}
+
 @mixin button{
     width: 100px;
     padding: 5px;
@@ -43,6 +54,7 @@
     font-family: $font;
     color: #000;
     font-weight: bold;
+    transition: all .3s ease-in-out;
     &:hover{
         background-color: darken($primary-color, 30%);
     }

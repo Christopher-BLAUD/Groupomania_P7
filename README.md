@@ -65,7 +65,7 @@ TOKEN_SECRET=""
 DB_USER=""
 DB_PASSWORD=""
 ```
-__TOKEN_SECRET__ pour la valeur de votre choix.  
+__TOKEN_SECRET__ par la valeur de votre choix.  
 __DB_USER__ par le nom d'utilisateur de votre SGBD.  
 __DB_PASSWORD__ par le mot de passe de votre SGBD.
 

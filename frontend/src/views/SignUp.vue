@@ -5,14 +5,14 @@
     <div class="sign-up_form">
     <form action="">
       <h2 class="info">Créer un compte</h2>
-      <input v-model="lastName" type="text" name="last-name" placeholder="Nom" id="lastName" @input="lastNameValidation()"/>
+      <input v-model="lastName" type="text" name="last-name" placeholder="Nom" id="lastName" @change="lastNameValidation()"/>
       <span class="lastname-err-msg">Nom incorrect</span>
-      <input v-model="firstName" type="text" name="first-name" placeholder="Prénom" id="firstName" @input="firstNameValidation()" />
+      <input v-model="firstName" type="text" name="first-name" placeholder="Prénom" id="firstName" @change="firstNameValidation()" />
       <span class="firstname-err-msg">Prénom incorrect</span>
       <input v-model="email" type="email" name="email" placeholder="Adresse email" id="email" />
       <!-- <span class="email-err-msg">Format d'adresse email incorrect (ex: jean.dupont@gmail.com)</span> -->
       <div id="pass-container">
-        <input v-model="password" type="password" name="password" placeholder="Mot de passe" id="form-password" @input="passwordValidation()"/>
+        <input v-model="password" type="password" name="password" placeholder="Mot de passe" id="form-password" @change="passwordValidation()"/>
         <i class="fas fa-eye" @click="showPassword()" id="eye"></i>
         <span class="pass-msg-err">Votre mot de passe doit commencer par une majuscule et contenir <strong>au moins 8 caractères</strong> <br> ( dont au moins <strong>2 chiffres</strong> )</span>
       </div>
@@ -248,8 +248,22 @@ export default {
   bottom: -27px;
   right: 309px;
   text-align: center;
+  @include mobile{
+    right: -5px;
+    bottom: 65px;
+  }
+  @include touch-pad{
+    right: -5px;
+    bottom: 65px;
+  }
     &::after{
-      @include left-arrow(51px)
+      @include left-arrow(51px);
+      @include mobile{
+        @include bottom-arrow;
+      }
+      @include touch-pad{
+        @include bottom-arrow;
+      }
     }
 }
 .lastname-err-msg{
@@ -257,8 +271,15 @@ export default {
   position: absolute;
   right: 323px;
   top: 115px;
+  @include mobile{
+    right: 15px;
+    top: 71px;
+  }
   &::after{
       @include left-arrow(11px);
+      @include mobile{
+        @include bottom-arrow;
+      }
     }
 }
 .firstname-err-msg{
@@ -266,8 +287,15 @@ export default {
   position: absolute;
   right: 323px;
   top: 183px;
+  @include mobile{
+    right: 15px;
+    top: 137px;
+  }
   &::after{
       @include left-arrow(9px);
+      @include mobile{
+        @include bottom-arrow;
+      }
     }
 }
 .show-img{

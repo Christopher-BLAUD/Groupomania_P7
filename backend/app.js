@@ -33,8 +33,8 @@ app.use((req, res, next) => {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true}));
 
-/* sequelize.sync({force: true}) */
-/* sequelize.sync({alter: true}) */
+// sequelize.sync({force: true})
+// sequelize.sync({alter: true})
 
 
 // Définition des relations
